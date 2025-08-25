@@ -190,11 +190,7 @@ const CreepyGlitchMesh: React.FC<CreepyGlitchMeshProps> = ({ keyword }) => {
     mesh.rotation.y += 0.003 + Math.random() * 0.003;
     mesh.rotation.z += 0.001 + Math.random() * 0.002;
 
-    // 카메라 흔들림 효과
-    if (glitchTrigger) {
-      state.camera.position.x += (Math.random() - 0.5) * 0.1;
-      state.camera.position.y += (Math.random() - 0.5) * 0.1;
-    }
+    // 카메라 직접 조작 제거 - 사용자 제어만 허용
 
     // 파편 애니메이션
     if (fragmentMeshRef.current) {

@@ -17,6 +17,7 @@ interface GlitchArtCanvasProps {
 const GlitchArtCanvas: React.FC<GlitchArtCanvasProps> = ({ keyword }) => {
   const [mobile, setMobile] = useState(false);
   const [performanceLevel, setPerformanceLevel] = useState('medium');
+  const [canvasReady, setCanvasReady] = useState(false);
   const cameraRef = useRef<THREE.PerspectiveCamera>(null);
   const [cameraShake, setCameraShake] = useState({ x: 0, y: 0, z: 0 });
 
@@ -25,21 +26,26 @@ const GlitchArtCanvas: React.FC<GlitchArtCanvasProps> = ({ keyword }) => {
     setPerformanceLevel(getPerformanceLevel());
   }, []);
 
-  // 카메라 흔들림 효과
+  useEffect(() => {
+    setMobile(isMobile());
+    setPerformanceLevel(getPerformanceLevel());
+  }, []);
+
+  // 카메라 흔들림 효과 (자동 카메라 조작은 제거하고 시각적 효과만)
   useEffect(() => {
     const interval = setInterval(() => {
-      if (Math.random() > 0.7) {
+      if (Math.random() > 0.8) {
         setCameraShake({
-          x: (Math.random() - 0.5) * 0.2,
-          y: (Math.random() - 0.5) * 0.2, 
-          z: (Math.random() - 0.5) * 0.1
+          x: (Math.random() - 0.5) * 0.1,
+          y: (Math.random() - 0.5) * 0.1, 
+          z: (Math.random() - 0.5) * 0.05
         });
         
         setTimeout(() => {
           setCameraShake({ x: 0, y: 0, z: 0 });
-        }, 150);
+        }, 100);
       }
-    }, 2000 + Math.random() * 3000);
+    }, 3000 + Math.random() * 2000);
 
     return () => clearInterval(interval);
   }, []);
@@ -50,9 +56,28 @@ const GlitchArtCanvas: React.FC<GlitchArtCanvasProps> = ({ keyword }) => {
         gl={{
           antialias: !mobile,
           alpha: false,
-          powerPreference: "high-performance"
+          powerPreference: "high-performance",
+          preserveDrawingBuffer: false
         }}
         dpr={mobile ? [1, 1.5] : [1, 2]}
+        onCreated={(state) => {
+          // WebGL 컨텍스트가 생성된 후 안전하게 설정
+          try {
+            if (state.gl && state.gl.domElement) {
+              state.gl.setClearColor('#050505', 1);
+              // 추가 안전 설정
+              state.gl.shadowMap.enabled = true;
+              state.gl.shadowMap.type = THREE.PCFSoftShadowMap;
+              setCanvasReady(true);
+            }
+          } catch (error) {
+            console.warn('WebGL context setup failed:', error);
+            setCanvasReady(true); // 에러가 있어도 렌더링 계속
+          }
+        }}
+        onError={(error) => {
+          console.error('Canvas error:', error);
+        }}
       >
         <PerspectiveCamera 
           ref={cameraRef}
@@ -79,23 +104,24 @@ const GlitchArtCanvas: React.FC<GlitchArtCanvasProps> = ({ keyword }) => {
         )}
 
         {/* 배경 파티클 */}
-        <CreepyBackgroundParticles keyword={keyword} />
+        {canvasReady && <CreepyBackgroundParticles keyword={keyword} />}
 
         {/* 섬뜩한 글리치 엔티티 */}
-        <CreepyGlitchMesh keyword={keyword} />
+        {canvasReady && <CreepyGlitchMesh keyword={keyword} />}
 
-        {/* 카메라 컨트롤 - 불안정한 움직임 */}
+        {/* 카메라 컨트롤 - 사용자 전용 제어 */}
         <OrbitControls
           enablePan={true}
           enableZoom={true}
           enableRotate={true}
-          autoRotate={Math.random() > 0.7}
-          autoRotateSpeed={0.5 + Math.random() * 1.5}
+          autoRotate={false}
           maxDistance={50}
           minDistance={0.1}
-          panSpeed={1.5 + Math.random() * 0.5}
-          rotateSpeed={1.2 + Math.random() * 0.3}
-          zoomSpeed={1.0 + Math.random() * 0.2}
+          panSpeed={1.0}
+          rotateSpeed={1.0}
+          zoomSpeed={1.0}
+          dampingFactor={0.1}
+          enableDamping={true}
         />
 
         {/* 강화된 포스트 프로세싱 효과 */}
