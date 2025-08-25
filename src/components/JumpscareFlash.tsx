@@ -9,7 +9,7 @@ interface JumpscareFlashProps {
 }
 
 // 갑작스러운 점프케어 효과
-const JumpscareFlash: React.FC<JumpscareFlashProps> = ({ keyword }) => {
+const JumpscareFlash: React.FC<JumpscareFlashProps> = ({ keyword: _keyword }) => {
   const meshRef = useRef<THREE.Mesh>(null);
   const [isFlashing, setIsFlashing] = useState(false);
   const [lastFlash, setLastFlash] = useState(0);

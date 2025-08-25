@@ -23,18 +23,17 @@ const createCreepyGlitchEntity = (keyword: string, performanceLevel: string) => 
 
   // 성능에 따른 복잡도 설정
   const complexity = performanceLevel === 'high' ? 1.0 : performanceLevel === 'medium' ? 0.7 : 0.4;
-  const vertexCount = Math.floor(800 * complexity);
   const fragmentCount = Math.floor(50 * complexity);
 
   // 기본 불규칙 다면체 생성 (TorusKnot 기반으로 왜곡)
   const baseGeometry = new THREE.TorusKnotGeometry(1.2, 0.4, 64, 16, 2, 3);
   const vertices = baseGeometry.attributes.position.array as Float32Array;
   const colors: number[] = [];
-  
+
   // 각 정점을 무작위로 왜곡하여 비정형적 형태 생성
   for (let i = 0; i < vertices.length; i += 3) {
     const vertexSeed = hash + i * 0.1;
-    
+
     // 불규칙한 왜곡 적용
     vertices[i] += (random(vertexSeed) - 0.5) * 0.8;     // x
     vertices[i + 1] += (random(vertexSeed + 1) - 0.5) * 0.8; // y  
@@ -43,7 +42,7 @@ const createCreepyGlitchEntity = (keyword: string, performanceLevel: string) => 
     // 어두운 기본 색상 (짙은 남색/보라색)
     const colorChoice = Math.floor(random(vertexSeed + 3) * 3);
     let r, g, b;
-    
+
     switch (colorChoice) {
       case 0: // 짙은 남색
         r = 0.1; g = 0.14; b = 0.5; // #1A237E
@@ -67,15 +66,15 @@ const createCreepyGlitchEntity = (keyword: string, performanceLevel: string) => 
 
   for (let f = 0; f < fragmentCount; f++) {
     const fragmentSeed = hash + f * 50;
-    
+
     // 파편의 위치 (메인 오브젝트 주변)
     const x = (random(fragmentSeed) - 0.5) * 8;
     const y = (random(fragmentSeed + 1) - 0.5) * 8;
     const z = (random(fragmentSeed + 2) - 0.5) * 8;
-    
+
     // 작은 파편 생성 (삼각형 형태)
     const size = 0.1 + random(fragmentSeed + 3) * 0.2;
-    
+
     // 삼각형 정점들
     fragmentVertices.push(
       x, y, z,
@@ -105,20 +104,20 @@ const createCreepyGlitchEntity = (keyword: string, performanceLevel: string) => 
   fragmentGeometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(fragmentVertices), 3));
   fragmentGeometry.setAttribute('color', new THREE.BufferAttribute(new Float32Array(fragmentColors), 3));
 
-  return { mainGeometry, fragmentGeometry, vertexCount: vertices.length / 3 };
+  return { mainGeometry, fragmentGeometry };
 };
 
 const CreepyGlitchMesh: React.FC<CreepyGlitchMeshProps> = ({ keyword }) => {
   const mainMeshRef = useRef<THREE.Mesh>(null);
   const fragmentMeshRef = useRef<THREE.Points>(null);
   const materialRef = useRef<THREE.MeshStandardMaterial>(null);
-  
+
   const [performanceLevel] = useState(getPerformanceLevel());
   const [glitchTime, setGlitchTime] = useState(0);
   const [isGlitching, setIsGlitching] = useState(false);
 
   // 지오메트리 생성
-  const { mainGeometry, fragmentGeometry, vertexCount } = useMemo(() => 
+  const { mainGeometry, fragmentGeometry } = useMemo(() =>
     createCreepyGlitchEntity(keyword, performanceLevel), [keyword, performanceLevel]
   );
 
@@ -137,7 +136,7 @@ const CreepyGlitchMesh: React.FC<CreepyGlitchMeshProps> = ({ keyword }) => {
 
     // 글리치 타이밍 제어 (불규칙한 간격)
     const glitchTrigger = Math.sin(time * 0.5) > 0.95 || Math.sin(time * 0.3 + 1) > 0.98;
-    
+
     if (glitchTrigger && !isGlitching) {
       setIsGlitching(true);
       setGlitchTime(time);
@@ -154,7 +153,7 @@ const CreepyGlitchMesh: React.FC<CreepyGlitchMeshProps> = ({ keyword }) => {
           positions[i + 2] = (Math.random() - 0.5) * 2;  // z
         }
       }
-      
+
       // 색상 번쩍임 효과
       if (materialRef.current) {
         materialRef.current.emissive.setRGB(
@@ -169,7 +168,7 @@ const CreepyGlitchMesh: React.FC<CreepyGlitchMeshProps> = ({ keyword }) => {
       for (let i = 0; i < positions.length; i++) {
         positions[i] = originalVertices[i] + (Math.random() - 0.5) * 0.1;
       }
-      
+
       if (materialRef.current) {
         materialRef.current.emissive.setRGB(0, 0, 0);
       }
