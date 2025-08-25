@@ -184,8 +184,8 @@ const BackgroundParticles: React.FC<BackgroundParticlesProps> = ({ keyword }) =>
       originalPos[i3 + 2] = z;
 
       // 극도로 어두운 색상
-      const colorIndex = (hash + i) % cosmicPalette.length;
-      const [r, g, b] = cosmicPalette[colorIndex];
+      const colorIndex = (hash + i) % creepyPalette.length;
+      const [r, g, b] = creepyPalette[colorIndex];
       const intensity = 0.08 + Math.random() * 0.08;
       colors[i3] = r * intensity;
       colors[i3 + 1] = g * intensity;
