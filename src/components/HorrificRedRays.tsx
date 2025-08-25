@@ -21,8 +21,8 @@ const createHorrificRedRays = (keyword: string, performanceLevel: string) => {
     return x - Math.floor(x);
   };
 
-  // 성능에 따른 광선 수량 조절
-  const rayCount = performanceLevel === 'high' ? 80 : performanceLevel === 'medium' ? 50 : 30;
+  // 성능에 따른 광선 수량 조절 (대폭 감소)
+  const rayCount = performanceLevel === 'high' ? 30 : performanceLevel === 'medium' ? 15 : 8;
 
   const vertices: number[] = [];
   const colors: number[] = [];
@@ -43,8 +43,8 @@ const createHorrificRedRays = (keyword: string, performanceLevel: string) => {
     // 광선의 길이 (매우 불규칙)
     const baseLength = 15 + random(raySeed + 5) * 20;
 
-    // 여러 개의 연결된 선분으로 끔찍하고 날카로운 광선 생성
-    const segmentCount = Math.floor(3 + random(raySeed + 6) * 8);
+    // 여러 개의 연결된 선분으로 끔찍하고 날카로운 광선 생성 (단순화)
+    const segmentCount = Math.floor(2 + random(raySeed + 6) * 3); // 2-4개 세그먼트로 감소
     let currentX = centerX;
     let currentY = centerY;
     let currentZ = centerZ;
@@ -145,27 +145,32 @@ const HorrificRedRays: React.FC<HorrificRedRaysProps> = ({ keyword }) => {
     const time = state.clock.elapsedTime;
     const mesh = meshRef.current;
 
-    // 끔찍한 펄스 효과
-    const pulseIntensity = 0.5 + Math.sin(time * 3) * 0.3 + Math.sin(time * 7) * 0.2;
+    // 성능에 따른 애니메이션 빈도 조절
+    const animationSpeed = performanceLevel === 'high' ? 1.0 : performanceLevel === 'medium' ? 0.7 : 0.5;
 
-    // 머티리얼 emissive 강도 조절
-    materialRef.current.emissive.setRGB(
-      pulseIntensity * 0.8, // 빨강
-      pulseIntensity * 0.1, // 초록 (거의 없음)
-      0 // 파랑 (없음)
-    );
+    // 끔찍한 펄스 효과 (성능 최적화)
+    const pulseIntensity = 0.5 + Math.sin(time * 2 * animationSpeed) * 0.2;
 
-    // 불안정한 회전
-    mesh.rotation.x += 0.001 + Math.sin(time * 0.7) * 0.002;
-    mesh.rotation.y += 0.002 + Math.cos(time * 0.5) * 0.001;
-    mesh.rotation.z += 0.0005 + Math.sin(time * 1.1) * 0.001;
+    // 머티리얼 emissive 강도 조절 (업데이트 빈도 감소)
+    if (Math.floor(time * 30) % 2 === 0) { // 30fps 대신 15fps로 업데이트
+      materialRef.current.emissive.setRGB(
+        pulseIntensity * 0.6, // 빨강 강도 감소
+        pulseIntensity * 0.05, // 초록 (거의 없음)
+        0 // 파랑 (없음)
+      );
+    }
 
-    // 갑작스러운 글리치 효과
-    if (Math.random() > 0.98) {
+    // 불안정한 회전 (속도 감소)
+    mesh.rotation.x += 0.0005 * animationSpeed;
+    mesh.rotation.y += 0.001 * animationSpeed;
+    mesh.rotation.z += 0.0002 * animationSpeed;
+
+    // 갑작스러운 글리치 효과 (빈도 감소)
+    if (Math.random() > 0.995) { // 0.98에서 0.995로 변경
       mesh.scale.set(
-        1 + (Math.random() - 0.5) * 0.1,
-        1 + (Math.random() - 0.5) * 0.1,
-        1 + (Math.random() - 0.5) * 0.1
+        1 + (Math.random() - 0.5) * 0.05, // 효과 강도 감소
+        1 + (Math.random() - 0.5) * 0.05,
+        1 + (Math.random() - 0.5) * 0.05
       );
 
       setTimeout(() => {

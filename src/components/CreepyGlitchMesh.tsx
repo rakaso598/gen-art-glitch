@@ -21,12 +21,12 @@ const createCreepyGlitchEntity = (keyword: string, performanceLevel: string) => 
     return x - Math.floor(x);
   };
 
-  // 성능에 따른 복잡도 설정
-  const complexity = performanceLevel === 'high' ? 1.0 : performanceLevel === 'medium' ? 0.7 : 0.4;
-  const fragmentCount = Math.floor(50 * complexity);
+  // 성능에 따른 복잡도 설정 (대폭 감소)
+  const complexity = performanceLevel === 'high' ? 0.5 : performanceLevel === 'medium' ? 0.3 : 0.2;
+  const fragmentCount = Math.floor(20 * complexity); // 파편 수 감소
 
-  // 기본 불규칙 다면체 생성 (TorusKnot 기반으로 왜곡)
-  const baseGeometry = new THREE.TorusKnotGeometry(1.2, 0.4, 64, 16, 2, 3);
+  // 기본 불규칙 다면체 생성 (더 단순한 형태)
+  const baseGeometry = new THREE.TorusKnotGeometry(1.2, 0.4, 32, 8, 2, 3); // 해상도 절반으로 감소
   const vertices = baseGeometry.attributes.position.array as Float32Array;
   const colors: number[] = [];
 

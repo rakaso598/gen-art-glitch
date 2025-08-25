@@ -56,10 +56,13 @@ const GlitchArtCanvas: React.FC<GlitchArtCanvasProps> = ({ keyword }) => {
     <div className="w-full h-screen">
       <Canvas
         gl={{
-          antialias: !mobile,
-          powerPreference: "high-performance"
+          antialias: performanceLevel === 'high' && !mobile, // 조건부 안티앨리어싱
+          powerPreference: "high-performance",
+          alpha: false, // 투명도 비활성화로 성능 향상
+          depth: true,
+          stencil: false // 스텐실 버퍼 비활성화
         }}
-        dpr={mobile ? 1 : 1.5}
+        dpr={mobile ? 1 : (performanceLevel === 'high' ? 1.5 : 1)} // DPR 최적화
         camera={{ position: [0, 0, 5], fov: 75 }}
         onCreated={(state) => {
           // WebGL 컨텍스트 안전 설정
@@ -112,8 +115,8 @@ const GlitchArtCanvas: React.FC<GlitchArtCanvasProps> = ({ keyword }) => {
         {/* 섬뜩한 글리치 엔티티 */}
         {canvasReady && <CreepyGlitchMesh keyword={keyword} />}
 
-        {/* 갑작스러운 점프케어 효과 */}
-        {canvasReady && performanceLevel !== 'low' && <JumpscareFlash keyword={keyword} />}
+        {/* 갑작스러운 점프케어 효과 (고성능에서만) */}
+        {canvasReady && performanceLevel === 'high' && <JumpscareFlash keyword={keyword} />}
 
         {/* 카메라 컨트롤 - 사용자 전용 제어 */}
         <OrbitControls
@@ -130,51 +133,30 @@ const GlitchArtCanvas: React.FC<GlitchArtCanvasProps> = ({ keyword }) => {
           enableDamping={true}
         />
 
-        {/* 강화된 포스트 프로세싱 효과 */}
-        {performanceLevel !== 'low' && (
+        {/* 최적화된 포스트 프로세싱 효과 */}
+        {performanceLevel === 'high' && (
           <EffectComposer>
             <Bloom
-              intensity={0.08}
-              luminanceThreshold={0.9}
-              luminanceSmoothing={0.7}
+              intensity={0.05}
+              luminanceThreshold={0.95}
+              luminanceSmoothing={0.5}
               blendFunction={BlendFunction.SCREEN}
             />
-            <>
-              {performanceLevel === 'high' && (
-                <>
-                  <Glitch
-                    delay={new THREE.Vector2(1.5, 3.5)}
-                    duration={new THREE.Vector2(0.1, 0.3)}
-                    strength={new THREE.Vector2(0.1, 0.3)}
-                    mode={GlitchMode.SPORADIC}
-                    active
-                    ratio={0.85}
-                  />
-                  <Scanline
-                    blendFunction={BlendFunction.OVERLAY}
-                    density={1.25}
-                  />
-                  <Noise
-                    premultiply
-                    blendFunction={BlendFunction.MULTIPLY}
-                    opacity={0.4}
-                  />
-                </>
-              )}
-              {performanceLevel === 'medium' && (
-                <>
-                  <Scanline
-                    blendFunction={BlendFunction.OVERLAY}
-                    density={1.0}
-                  />
-                  <Noise
-                    premultiply
-                    blendFunction={BlendFunction.MULTIPLY}
-                    opacity={0.25}
-                  />
-                </>
-              )}
-            </>
+            <Noise
+              premultiply
+              blendFunction={BlendFunction.MULTIPLY}
+              opacity={0.2}
+            />
+          </EffectComposer>
+        )}
+        {performanceLevel === 'medium' && (
+          <EffectComposer>
+            <Bloom
+              intensity={0.03}
+              luminanceThreshold={0.98}
+              luminanceSmoothing={0.3}
+              blendFunction={BlendFunction.SCREEN}
+            />
           </EffectComposer>
         )}
       </Canvas>

@@ -15,9 +15,9 @@ const BackgroundParticles: React.FC<BackgroundParticlesProps> = ({ keyword }) =>
 
   // 섬뜩한 파티클 생성
   const { geometry, originalPositions } = useMemo(() => {
-    // 성능에 따른 파티클 수 조절 - 적은 수로 섬뜩함 강조
-    const baseParticleCount = performanceLevel === 'high' ? 800 : performanceLevel === 'medium' ? 500 : 300;
-    const particleCount = Math.min(baseParticleCount + keyword.length * 50, baseParticleCount * 1.5);
+    // 성능에 따른 파티클 수 조절 - 대폭 감소
+    const baseParticleCount = performanceLevel === 'high' ? 200 : performanceLevel === 'medium' ? 100 : 50;
+    const particleCount = Math.min(baseParticleCount + keyword.length * 10, baseParticleCount * 1.2);
 
     const positions = new Float32Array(particleCount * 3);
     const colors = new Float32Array(particleCount * 3);
@@ -93,7 +93,7 @@ const BackgroundParticles: React.FC<BackgroundParticlesProps> = ({ keyword }) =>
       // 색상 할당 - 대부분 어둡고 가끔 번쩍임
       const colorIndex = (hash + i) % creepyPalette.length;
       const [r, g, b] = creepyPalette[colorIndex];
-      
+
       // 일부 파티클만 글리치 색상으로
       const isGlitchParticle = Math.random() > 0.9;
       if (isGlitchParticle) {
