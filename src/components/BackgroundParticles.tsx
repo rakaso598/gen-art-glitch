@@ -44,10 +44,9 @@ const BackgroundParticles: React.FC<BackgroundParticlesProps> = ({ keyword }) =>
     }
   }
   
-  useFrame((state) => {
+  useFrame(() => {
     if (!pointsRef.current) return;
     
-    const time = state.clock.elapsedTime;
     const positions = pointsRef.current.geometry.attributes.position.array as Float32Array;
     
     for (let i = 0; i < particleCount; i++) {

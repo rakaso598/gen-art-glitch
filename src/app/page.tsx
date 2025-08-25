@@ -6,8 +6,12 @@ import dynamic from 'next/dynamic';
 // Three.js 컴포넌트는 클라이언트 사이드에서만 렌더링
 const GlitchArtCanvas = dynamic(() => import('@/components/GlitchArtCanvas'), {
   ssr: false,
-  loading: () => <div className="w-full h-screen bg-[#050505] flex items-center justify-center text-[#CCCCCC]">Loading...</div>
-});
+  loading: () => (
+    <div className="w-full h-screen bg-[#050505] flex items-center justify-center text-[#CCCCCC]">
+      Loading...
+    </div>
+  )
+}) as React.ComponentType<{ keyword: string }>;
 
 export default function Home() {
   const [keyword, setKeyword] = useState('');
