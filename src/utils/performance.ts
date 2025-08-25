@@ -25,7 +25,7 @@ export const getPerformanceLevel = () => {
     }
 
     return 'medium';
-  } catch (error) {
+  } catch {
     // WebGL 오류 시 저성능으로 폴백
     return 'low';
   }

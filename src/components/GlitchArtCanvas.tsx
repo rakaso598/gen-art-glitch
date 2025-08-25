@@ -2,8 +2,8 @@
 
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
-import { EffectComposer, Bloom, Noise, Scanline, Glitch } from '@react-three/postprocessing';
-import { BlendFunction, GlitchMode } from 'postprocessing';
+import { EffectComposer, Bloom, Noise } from '@react-three/postprocessing';
+import { BlendFunction } from 'postprocessing';
 import { useState, useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import CreepyGlitchMesh from './CreepyGlitchMesh';
