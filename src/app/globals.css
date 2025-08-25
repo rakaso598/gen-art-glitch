@@ -38,7 +38,7 @@ body {
 
 .glitch-title::before,
 .glitch-title::after {
-  content: 'Generative Glitch Entity';
+  content: '';
   position: absolute;
   top: 0;
   left: 0;

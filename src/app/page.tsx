@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 
 // Three.js 컴포넌트는 클라이언트 사이드에서만 렌더링
@@ -20,7 +20,13 @@ export default function Home() {
   const [keyword, setKeyword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showArt, setShowArt] = useState(false);
-  const [glitchText, setGlitchText] = useState('');
+  const [glitchText, setGlitchText] = useState('@@!#$#&'); // 초기값을 고정으로 설정
+  const [isClient, setIsClient] = useState(false);
+
+  // 클라이언트 사이드 렌더링 확인
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,8 +54,32 @@ export default function Home() {
   const resetArt = () => {
     setShowArt(false);
     setKeyword('');
-    setGlitchText('');
+    setGlitchText('@@!#$#&'); // 초기값으로 리셋
   };
+
+  // 클라이언트 사이드에서만 렌더링
+  if (!isClient) {
+    return (
+      <div className="relative w-full h-screen overflow-hidden bg-[#050505]">
+        <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
+          <h1 className="text-3xl md:text-4xl lg:text-6xl font-bold text-[#888888] mb-6 md:mb-8 text-center font-mono px-4 glitch-title">
+            Generative Glitch Entity
+          </h1>
+          <p className="text-base md:text-lg text-[#666666] mb-8 md:mb-12 text-center max-w-md font-mono px-4">
+            키워드를 입력하여 데이터의 심연에서 솟아나는 섬뜩한 글리치 엔티티를 생성하세요
+          </p>
+          <div className="flex flex-col items-center gap-4 px-4 w-full max-w-md">
+            <div className="px-4 md:px-6 py-2 md:py-3 bg-transparent border border-[#666666] text-[#888888] placeholder-[#555555] rounded-none outline-none w-full font-mono text-sm md:text-base">
+              키워드를 입력하세요...
+            </div>
+            <div className="px-6 md:px-8 py-2 md:py-3 bg-transparent border border-[#311B92] text-[#311B92] font-mono text-sm md:text-base">
+              Summon Entity
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative w-full h-screen overflow-hidden bg-[#050505]">
@@ -84,7 +114,7 @@ export default function Home() {
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center z-10">
           <div className="text-[#FF00FF] text-2xl font-mono animate-pulse glitch-loading">
-            {glitchText || '@@!#$#&'}
+            {glitchText}
           </div>
         </div>
       )}
