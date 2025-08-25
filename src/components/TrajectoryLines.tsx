@@ -29,23 +29,23 @@ const createNeonTrajectoryLines = (keyword: string, performanceLevel: string) =>
   const vertices: number[] = [];
   const colors: number[] = [];
 
-  // 우주적 섬뜩함을 위한 어둡고 오묘한 색상 팔레트
+  // 기하학적 섬뜩함을 위한 어둡고 차분한 색상 팔레트
   const cosmicColors = [
-    [0.15, 0.05, 0.35],    // 심연의 보라
-    [0.05, 0.15, 0.45],    // 우주의 푸른 어둠
-    [0.25, 0.05, 0.15],    // 피의 어둠
-    [0.05, 0.25, 0.20],    // 독의 초록
-    [0.35, 0.20, 0.05],    // 녹슨 금속
-    [0.20, 0.05, 0.25],    // 자주빛 어둠
-    [0.05, 0.30, 0.35],    // 심해의 청록
-    [0.30, 0.15, 0.05],    // 타오르는 어둠
-    [0.40, 0.05, 0.40],    // 보라빛 공허
-    [0.05, 0.20, 0.40],    // 얼어붙은 파랑
-    [0.25, 0.25, 0.05],    // 병든 황금
-    [0.35, 0.05, 0.20],    // 어둠의 진홍
-    [0.05, 0.35, 0.15],    // 독성 녹색
-    [0.20, 0.30, 0.05],    // 썩은 황록
-    [0.45, 0.10, 0.05],    // 지옥의 주황
+    [0.08, 0.02, 0.15],    // 깊은 보라 어둠
+    [0.02, 0.06, 0.20],    // 심연의 청색
+    [0.12, 0.02, 0.06],    // 어둠의 적색
+    [0.02, 0.10, 0.08],    // 차분한 녹색
+    [0.15, 0.08, 0.02],    // 어둠의 주황
+    [0.08, 0.02, 0.12],    // 자주빛 그림자
+    [0.02, 0.12, 0.15],    // 깊은 청록
+    [0.12, 0.06, 0.02],    // 어둠의 황색
+    [0.18, 0.02, 0.18],    // 보라빛 무
+    [0.02, 0.08, 0.18],    // 얼어붙은 청색
+    [0.10, 0.10, 0.02],    // 병든 황록
+    [0.15, 0.02, 0.08],    // 진홍 그림자
+    [0.02, 0.15, 0.06],    // 독성 그림자
+    [0.08, 0.12, 0.02],    // 썩은 녹황
+    [0.20, 0.04, 0.02],    // 지옥의 어둠
   ];
 
   for (let t = 0; t < trajectoryCount; t++) {
@@ -280,16 +280,16 @@ const createNeonTrajectoryLines = (keyword: string, performanceLevel: string) =>
       vertices.push(prevX, prevY, prevZ);
       vertices.push(x, y, z);
 
-      // 우주적 섬뜩함을 위한 오묘한 색상 강도
-      const baseIntensity = 0.3 + progress * 0.4;
-      const cosmicPulse = Math.sin(progress * Math.PI * 8) * 0.3;
-      const voidFlicker = Math.sin(progress * Math.PI * 20) * 0.2;
+      // 기하학적 섬뜩함을 위한 절제된 색상 강도
+      const baseIntensity = 0.15 + progress * 0.25;
+      const cosmicPulse = Math.sin(progress * Math.PI * 8) * 0.15;
+      const voidFlicker = Math.sin(progress * Math.PI * 20) * 0.1;
       const intensity = baseIntensity + cosmicPulse + voidFlicker;
       
-      // 색상에 우주적 변조 추가
-      const redShift = r * intensity * (1 + Math.sin(progress * Math.PI * 12) * 0.4);
-      const blueShift = g * intensity * (1 + Math.cos(progress * Math.PI * 16) * 0.4); 
-      const darkMatter = b * intensity * (1 + Math.sin(progress * Math.PI * 24) * 0.4);
+      // 색상에 기하학적 변조 추가 - 더 어둡고 절제된
+      const redShift = r * intensity * (1 + Math.sin(progress * Math.PI * 12) * 0.2);
+      const blueShift = g * intensity * (1 + Math.cos(progress * Math.PI * 16) * 0.2); 
+      const darkMatter = b * intensity * (1 + Math.sin(progress * Math.PI * 24) * 0.2);
       
       colors.push(redShift, blueShift, darkMatter);
       colors.push(redShift, blueShift, darkMatter);
@@ -360,9 +360,9 @@ const TrajectoryLines: React.FC<TrajectoryLinesProps> = ({ keyword }) => {
         positions[i + 1] = originalY + voidPulse + dimensionalInstability * 1.5 + quantumFluctuation * 0.8;
         positions[i + 2] = originalZ + darkEnergyWave + dimensionalInstability * 0.8 + quantumFluctuation * 0.4;
 
-        // 어둠의 펄스 효과 - 섬뜩한 깜빡임
-        const voidPulseIntensity = 0.4 + Math.sin(time * 6 + lineIndex * 0.4) * 0.3;
-        const cosmicDecay = 0.7 + Math.cos(time * 3 + lineIndex * 0.2) * 0.2;
+        // 어둠의 펄스 효과 - 섬뜩한 깜빡임, 더 어둡게
+        const voidPulseIntensity = 0.2 + Math.sin(time * 6 + lineIndex * 0.4) * 0.15;
+        const cosmicDecay = 0.4 + Math.cos(time * 3 + lineIndex * 0.2) * 0.1;
         colors[i] *= voidPulseIntensity;
         colors[i + 1] *= cosmicDecay;
         colors[i + 2] *= voidPulseIntensity * cosmicDecay;
@@ -409,9 +409,9 @@ const TrajectoryLines: React.FC<TrajectoryLinesProps> = ({ keyword }) => {
         ref={materialRef}
         vertexColors={true}
         transparent={true}
-        opacity={0.85}
+        opacity={0.45}
         blending={THREE.AdditiveBlending}
-        linewidth={1.5}
+        linewidth={1.2}
       />
     </lineSegments>
   );

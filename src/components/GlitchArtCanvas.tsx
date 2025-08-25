@@ -34,15 +34,15 @@ const GlitchArtCanvas: React.FC<GlitchArtCanvasProps> = ({ keyword }) => {
       >
         <PerspectiveCamera makeDefault position={[0, 0, 5]} />
 
-        {/* 우주적 섬뜩함을 위한 어둠 조명 */}
-        <ambientLight intensity={0.05} />
-        <pointLight position={[15, 15, 15]} intensity={0.3} color="#0A0A2E" />
-        <pointLight position={[-15, -15, -15]} intensity={0.2} color="#16213E" />
-        <pointLight position={[0, 20, 0]} intensity={0.15} color="#1A1A40" />
+        {/* 기하학적 섬뜩함을 위한 극도로 어두운 조명 */}
+        <ambientLight intensity={0.02} />
+        <pointLight position={[15, 15, 15]} intensity={0.08} color="#0A0A1A" />
+        <pointLight position={[-15, -15, -15]} intensity={0.06} color="#1A0A1A" />
+        <pointLight position={[0, 20, 0]} intensity={0.05} color="#0A1A0A" />
         {!mobile && (
           <>
-            <pointLight position={[10, -10, 5]} intensity={0.1} color="#0F0F23" />
-            <pointLight position={[-5, 5, -10]} intensity={0.1} color="#0E1B55" />
+            <pointLight position={[10, -10, 5]} intensity={0.04} color="#1A1A0A" />
+            <pointLight position={[-5, 5, -10]} intensity={0.04} color="#0A0A2A" />
           </>
         )}
 
@@ -66,13 +66,13 @@ const GlitchArtCanvas: React.FC<GlitchArtCanvasProps> = ({ keyword }) => {
           zoomSpeed={1.0}
         />
 
-        {/* 우주적 섬뜩함을 위한 포스트 프로세싱 효과 */}
+        {/* 기하학적 섬뜩함을 위한 절제된 포스트 프로세싱 효과 */}
         {performanceLevel !== 'low' && (
           <EffectComposer>
             <Bloom
-              intensity={0.8}
-              luminanceThreshold={0.1}
-              luminanceSmoothing={0.3}
+              intensity={0.3}
+              luminanceThreshold={0.6}
+              luminanceSmoothing={0.8}
               blendFunction={BlendFunction.SCREEN}
             />
             <>
@@ -80,7 +80,7 @@ const GlitchArtCanvas: React.FC<GlitchArtCanvasProps> = ({ keyword }) => {
                 <Noise
                   premultiply
                   blendFunction={BlendFunction.MULTIPLY}
-                  opacity={0.15}
+                  opacity={0.25}
                 />
               )}
             </>

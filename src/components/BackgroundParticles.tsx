@@ -23,23 +23,23 @@ const BackgroundParticles: React.FC<BackgroundParticlesProps> = ({ keyword }) =>
     const colors = new Float32Array(particleCount * 3);
     const originalPos = new Float32Array(particleCount * 3);
 
-    // 우주적 섬뜩함을 위한 어둠의 색상 팔레트
+    // 기하학적 섬뜩함을 위한 어둠의 색상 팔레트
     const cosmicPalette = [
-      [0.1, 0.02, 0.2],    // 심연의 보라
-      [0.02, 0.1, 0.25],   // 우주의 푸른 어둠
-      [0.15, 0.02, 0.08],  // 피의 어둠
-      [0.02, 0.15, 0.12],  // 독의 초록
-      [0.2, 0.1, 0.02],    // 녹슨 금속
-      [0.12, 0.02, 0.15],  // 자주빛 어둠
-      [0.02, 0.18, 0.2],   // 심해의 청록
-      [0.18, 0.08, 0.02],  // 타오르는 어둠
-      [0.25, 0.02, 0.25],  // 보라빛 공허
-      [0.02, 0.12, 0.22],  // 얼어붙은 파랑
-      [0.15, 0.15, 0.02],  // 병든 황금
-      [0.2, 0.02, 0.1],    // 어둠의 진홍
-      [0.02, 0.2, 0.08],   // 독성 녹색
-      [0.12, 0.18, 0.02],  // 썩은 황록
-      [0.3, 0.05, 0.02],   // 지옥의 주황
+      [0.04, 0.01, 0.08],    // 깊은 보라 어둠
+      [0.01, 0.04, 0.10],    // 심연의 청색
+      [0.06, 0.01, 0.03],    // 어둠의 적색
+      [0.01, 0.06, 0.05],    // 차분한 녹색
+      [0.08, 0.04, 0.01],    // 어둠의 주황
+      [0.05, 0.01, 0.06],    // 자주빛 그림자
+      [0.01, 0.06, 0.08],    // 깊은 청록
+      [0.06, 0.03, 0.01],    // 어둠의 황색
+      [0.09, 0.01, 0.09],    // 보라빛 무
+      [0.01, 0.04, 0.09],    // 얼어붙은 청색
+      [0.05, 0.05, 0.01],    // 병든 황록
+      [0.08, 0.01, 0.04],    // 진홍 그림자
+      [0.01, 0.08, 0.03],    // 독성 그림자
+      [0.04, 0.06, 0.01],    // 썩은 녹황
+      [0.10, 0.02, 0.01],    // 지옥의 어둠
     ];
 
     // 파티클 초기 위치와 색상 설정 - 우주적 분포
@@ -190,10 +190,10 @@ const BackgroundParticles: React.FC<BackgroundParticlesProps> = ({ keyword }) =>
       originalPos[i3 + 1] = y;
       originalPos[i3 + 2] = z;
 
-      // 우주적 어둠의 색상
+      // 기하학적 어둠의 색상
       const colorIndex = (hash + i) % cosmicPalette.length;
       const [r, g, b] = cosmicPalette[colorIndex];
-      const intensity = 0.4 + Math.random() * 0.3;
+      const intensity = 0.15 + Math.random() * 0.15;
       colors[i3] = r * intensity;
       colors[i3 + 1] = g * intensity;
       colors[i3 + 2] = b * intensity;
@@ -229,24 +229,24 @@ const BackgroundParticles: React.FC<BackgroundParticlesProps> = ({ keyword }) =>
       // 난류 효과
       const turbulence = (Math.sin(originalX * 0.1 + time * 5) * Math.cos(originalY * 0.1 + time * 3)) * 2;
 
-      // 극한 글리치 (15% 확률)
-      if (Math.random() < 0.15) {
+      // 기하학적 글리치 (8% 확률로 줄임)
+      if (Math.random() < 0.08) {
         positions[i] = originalX + (Math.random() - 0.5) * 15;
         positions[i + 1] = originalY + (Math.random() - 0.5) * 15;
         positions[i + 2] = originalZ + (Math.random() - 0.5) * 10;
 
-        // 색상 극한 변화
-        colors[i] = Math.random() * 2;
-        colors[i + 1] = Math.random() * 2;
-        colors[i + 2] = Math.random() * 2;
+        // 색상 절제된 변화
+        colors[i] = Math.random() * 0.3;
+        colors[i + 1] = Math.random() * 0.3;
+        colors[i + 2] = Math.random() * 0.3;
       } else {
         // 일반적인 움직임
         positions[i] = originalX + wave1 + turbulence * 0.3;
         positions[i + 1] = originalY + wave2 + turbulence * 0.5;
         positions[i + 2] = originalZ + wave3 + turbulence * 0.2;
 
-        // 네온 펄스 효과
-        const pulse = 1 + Math.sin(time * 4 + particleIndex * 0.1) * 0.4;
+        // 어둠의 펄스 효과 - 절제된
+        const pulse = 0.6 + Math.sin(time * 4 + particleIndex * 0.1) * 0.2;
         colors[i] *= pulse;
         colors[i + 1] *= pulse;
         colors[i + 2] *= pulse;
@@ -278,8 +278,8 @@ const BackgroundParticles: React.FC<BackgroundParticlesProps> = ({ keyword }) =>
       <pointsMaterial
         vertexColors={true}
         transparent={true}
-        opacity={0.7}
-        size={performanceLevel === 'high' ? 3 : 2}
+        opacity={0.35}
+        size={performanceLevel === 'high' ? 2 : 1.5}
         sizeAttenuation={false}
         blending={THREE.AdditiveBlending}
       />
