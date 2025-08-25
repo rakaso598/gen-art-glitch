@@ -18,12 +18,12 @@ const JumpscareFlash: React.FC<JumpscareFlashProps> = ({ keyword }) => {
     if (!meshRef.current) return;
 
     const time = state.clock.elapsedTime;
-    
+
     // 불규칙한 간격으로 점프케어 효과 (15-30초마다)
     if (time - lastFlash > 15 + Math.random() * 15) {
       setIsFlashing(true);
       setLastFlash(time);
-      
+
       // 0.1초 후 효과 종료
       setTimeout(() => {
         setIsFlashing(false);
@@ -43,9 +43,9 @@ const JumpscareFlash: React.FC<JumpscareFlashProps> = ({ keyword }) => {
   return (
     <mesh ref={meshRef} position={[0, 0, 4]}>
       <planeGeometry args={[2, 2]} />
-      <meshBasicMaterial 
-        color="#FF0000" 
-        transparent 
+      <meshBasicMaterial
+        color="#FF0000"
+        transparent
         opacity={0}
         blending={THREE.AdditiveBlending}
       />
