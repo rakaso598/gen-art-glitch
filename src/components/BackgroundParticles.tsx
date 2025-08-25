@@ -13,40 +13,33 @@ const BackgroundParticles: React.FC<BackgroundParticlesProps> = ({ keyword }) =>
   const pointsRef = useRef<THREE.Points>(null);
   const [performanceLevel] = useState(() => getPerformanceLevel());
 
-  // 극한 네온 파티클 생성
+  // 섬뜩한 파티클 생성
   const { geometry, originalPositions } = useMemo(() => {
-    // 성능에 따른 파티클 수 조절 - 적당한 밀도
-    const baseParticleCount = performanceLevel === 'high' ? 3000 : performanceLevel === 'medium' ? 2000 : 1200;
-    const particleCount = Math.min(baseParticleCount + keyword.length * 100, baseParticleCount * 2);
+    // 성능에 따른 파티클 수 조절 - 적은 수로 섬뜩함 강조
+    const baseParticleCount = performanceLevel === 'high' ? 800 : performanceLevel === 'medium' ? 500 : 300;
+    const particleCount = Math.min(baseParticleCount + keyword.length * 50, baseParticleCount * 1.5);
 
     const positions = new Float32Array(particleCount * 3);
     const colors = new Float32Array(particleCount * 3);
     const originalPos = new Float32Array(particleCount * 3);
 
-    // 극도로 어둡고 절제된 색상 팔레트
-    const cosmicPalette = [
-      [0.02, 0.005, 0.04],   // 깊은 보라 어둠
-      [0.005, 0.02, 0.05],   // 심연의 청색
-      [0.03, 0.005, 0.015],  // 어둠의 적색
-      [0.005, 0.03, 0.025],  // 차분한 녹색
-      [0.04, 0.02, 0.005],   // 어둠의 주황
-      [0.025, 0.005, 0.03],  // 자주빛 그림자
-      [0.005, 0.03, 0.04],   // 깊은 청록
-      [0.03, 0.015, 0.005],  // 어둠의 황색
-      [0.045, 0.005, 0.045], // 보라빛 무
-      [0.005, 0.02, 0.045],  // 얼어붙은 청색
-      [0.025, 0.025, 0.005], // 병든 황록
-      [0.04, 0.005, 0.02],   // 진홍 그림자
-      [0.005, 0.04, 0.015],  // 독성 그림자
-      [0.02, 0.03, 0.005],   // 썩은 녹황
-      [0.05, 0.01, 0.005],   // 지옥의 어둠
+    // 섬뜩한 색상 팔레트 - 매우 어둡고 불안정
+    const creepyPalette = [
+      [0.1, 0.14, 0.5],     // 짙은 남색 #1A237E
+      [0.19, 0.11, 0.57],   // 검은 보라색 #311B92  
+      [0.05, 0.05, 0.08],   // 매우 어두운 회색
+      [0.1, 0.1, 0.15],     // 어둠
+      [0.08, 0.05, 0.12],   // 자주빛 어둠
+      [0.12, 0.08, 0.05],   // 갈색 어둠
+      [0.05, 0.12, 0.08],   // 녹색 어둠
+      [0.15, 0.05, 0.05],   // 적색 어둠
     ];
 
-    // 파티클 초기 위치와 색상 설정 - 우주적 분포
+    // 파티클 초기 위치와 색상 설정 - 불안정한 분포
     for (let i = 0; i < particleCount; i++) {
       const i3 = i * 3;
 
-      // 키워드 기반 분포 패턴 - 더 많은 우주적 패턴
+      // 키워드 기반 분포 패턴 - 클러스터와 빈 공간
       const hash = keyword.charCodeAt(i % keyword.length) + i;
       const pattern = hash % 12;
 
