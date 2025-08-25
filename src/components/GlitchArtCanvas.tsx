@@ -5,7 +5,7 @@ import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
 import { EffectComposer, Bloom, Noise } from '@react-three/postprocessing';
 import { BlendFunction } from 'postprocessing';
 import { useState, useEffect } from 'react';
-import GlitchMesh from './GlitchMesh';
+import TrajectoryLines from './TrajectoryLines';
 import BackgroundParticles from './BackgroundParticles';
 import { isMobile, getPerformanceLevel } from '@/utils/performance';
 
@@ -47,8 +47,8 @@ const GlitchArtCanvas: React.FC<GlitchArtCanvasProps> = ({ keyword }) => {
         {/* 배경 파티클 */}
         <BackgroundParticles keyword={keyword} />
         
-        {/* 글리치 메시 */}
-        <GlitchMesh keyword={keyword} />
+        {/* 궤적 라인 글리치 아트 */}
+        <TrajectoryLines keyword={keyword} />
         
         {/* 카메라 컨트롤 */}
         <OrbitControls

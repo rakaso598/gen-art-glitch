@@ -9,17 +9,17 @@ interface GlitchMeshProps {
   keyword: string;
 }
 
-// 파격적인 generative art 형태 생성 함수
-const createGenerativeArt = (keyword: string, performanceLevel: string) => {
+// 궤적 기반 라인 아트 생성 함수
+const createTrajectoryLines = (keyword: string, performanceLevel: string) => {
   const hash = keyword.split('').reduce((a, b) => {
     a = ((a << 5) - a) + b.charCodeAt(0);
     return a & a;
   }, 0);
   
-  // 성능에 따른 복잡도 조절
-  const complexity = performanceLevel === 'high' ? 200 : performanceLevel === 'medium' ? 120 : 80;
+  // 성능에 따른 궤적 복잡도
+  const trajectoryCount = performanceLevel === 'high' ? 15 : performanceLevel === 'medium' ? 10 : 6;
+  const pointsPerTrajectory = performanceLevel === 'high' ? 80 : performanceLevel === 'medium' ? 50 : 30;
   
-  // 완전히 불규칙한 형태 생성을 위한 랜덤 시드
   const random = (seed: number) => {
     const x = Math.sin(seed) * 10000;
     return x - Math.floor(x);
@@ -27,43 +27,97 @@ const createGenerativeArt = (keyword: string, performanceLevel: string) => {
   
   const geometry = new THREE.BufferGeometry();
   const vertices: number[] = [];
-  const indices: number[] = [];
+  const colors: number[] = [];
   
-  // 키워드 기반 불규칙 점들 생성
-  for (let i = 0; i < complexity; i++) {
-    const seed1 = hash + i * 0.1;
-    const seed2 = hash + i * 0.2;
-    const seed3 = hash + i * 0.3;
+  // 각 궤적마다 고유한 패턴 생성
+  for (let t = 0; t < trajectoryCount; t++) {
+    const trajectorySeed = hash + t * 100;
     
-    // 구면 좌표계를 변형한 불규칙 분포
-    const radius = 1 + random(seed1) * 2;
-    const theta = random(seed2) * Math.PI * 2;
-    const phi = random(seed3) * Math.PI;
+    // 궤적의 시작점과 방향 결정
+    const startX = (random(trajectorySeed) - 0.5) * 4;
+    const startY = (random(trajectorySeed + 1) - 0.5) * 4;
+    const startZ = (random(trajectorySeed + 2) - 0.5) * 4;
     
-    // 불규칙한 변형 추가
-    const distortion = random(seed1 + seed2) * 0.8;
-    const spikiness = random(seed3 + hash) > 0.7 ? 1.5 : 1;
+    // 궤적의 기하학적 패턴 타입 결정
+    const patternType = Math.floor(random(trajectorySeed + 3) * 5);
     
-    const x = (radius + distortion) * Math.sin(phi) * Math.cos(theta) * spikiness;
-    const y = (radius + distortion) * Math.sin(phi) * Math.sin(theta) * spikiness;
-    const z = (radius + distortion) * Math.cos(phi) * spikiness;
+    // 네온 색상 결정 (궤적별로)
+    const colorSeed = (trajectorySeed + hash) % 7;
+    let r, g, b;
+    switch (colorSeed) {
+      case 0: r = 1; g = 0; b = 1; break;     // 마젠타
+      case 1: r = 0; g = 1; b = 1; break;     // 시안
+      case 2: r = 0.8; g = 1; b = 0; break;   // 라임
+      case 3: r = 1; g = 0.2; b = 0.8; break; // 핫핑크
+      case 4: r = 0.2; g = 0.8; b = 1; break; // 딥스카이
+      case 5: r = 1; g = 0.5; b = 0; break;   // 오렌지
+      case 6: r = 0.5; g = 0; b = 1; break;   // 바이올렛
+      default: r = 1; g = 1; b = 1; break;    // 화이트
+    }
     
-    vertices.push(x, y, z);
-  }
-  
-  // 불규칙한 면 연결 (Delaunay 스타일)
-  for (let i = 0; i < complexity - 3; i += 3) {
-    // 인접한 점들을 불규칙하게 연결
-    const skip = Math.floor(random(hash + i) * 5) + 1;
-    if (i + skip < complexity) {
-      indices.push(i, i + 1, i + skip);
-      indices.push(i + 1, i + 2, i + skip);
+    // 궤적 점들 생성
+    for (let p = 0; p < pointsPerTrajectory; p++) {
+      const progress = p / pointsPerTrajectory;
+      const pointSeed = trajectorySeed + p * 0.1;
+      
+      let x, y, z;
+      
+      // 기하학적 궤적 패턴
+      switch (patternType) {
+        case 0: // 나선형 궤적
+          const spiralRadius = 1 + progress * 3;
+          const spiralAngle = progress * Math.PI * 6 + random(pointSeed) * 0.5;
+          x = startX + spiralRadius * Math.cos(spiralAngle);
+          y = startY + spiralRadius * Math.sin(spiralAngle);
+          z = startZ + progress * 4 - 2;
+          break;
+          
+        case 1: // 지그재그 궤적
+          const zigzagAmp = 2;
+          x = startX + progress * 6 - 3;
+          y = startY + Math.sin(progress * Math.PI * 8) * zigzagAmp;
+          z = startZ + Math.cos(progress * Math.PI * 4) * zigzagAmp * 0.5;
+          break;
+          
+        case 2: // 웨이브 궤적
+          const waveAmp = 1.5;
+          x = startX + Math.sin(progress * Math.PI * 4) * waveAmp;
+          y = startY + progress * 4 - 2;
+          z = startZ + Math.cos(progress * Math.PI * 6) * waveAmp;
+          break;
+          
+        case 3: // 프랙탈 궤적
+          const fractalScale = 2;
+          x = startX + Math.sin(progress * Math.PI * 12) * fractalScale * (1 - progress);
+          y = startY + Math.cos(progress * Math.PI * 8) * fractalScale * (1 - progress);
+          z = startZ + Math.sin(progress * Math.PI * 16) * fractalScale * 0.5;
+          break;
+          
+        case 4: // 폭발형 궤적
+          const explosionRadius = progress * progress * 5;
+          const explosionAngle = random(pointSeed) * Math.PI * 2;
+          x = startX + explosionRadius * Math.cos(explosionAngle);
+          y = startY + explosionRadius * Math.sin(explosionAngle);
+          z = startZ + (random(pointSeed + 1) - 0.5) * explosionRadius * 0.3;
+          break;
+          
+        default:
+          x = startX + (random(pointSeed) - 0.5) * 4;
+          y = startY + (random(pointSeed + 1) - 0.5) * 4;
+          z = startZ + (random(pointSeed + 2) - 0.5) * 4;
+      }
+      
+      // 점 위치 추가
+      vertices.push(x, y, z);
+      
+      // 색상 추가 (궤적 진행에 따라 강도 변화)
+      const intensity = 0.3 + progress * 0.7;
+      colors.push(r * intensity, g * intensity, b * intensity);
     }
   }
   
-  geometry.setIndex(indices);
   geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
-  geometry.computeVertexNormals();
+  geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
   
   return geometry;
 };
@@ -118,12 +172,12 @@ const extremeGlitch = (original: number, time: number, intensity: number, seed: 
 };
 
 const GlitchMesh: React.FC<GlitchMeshProps> = ({ keyword }) => {
-  const meshRef = useRef<THREE.Mesh>(null);
-  const materialRef = useRef<THREE.MeshStandardMaterial>(null);
+  const meshRef = useRef<THREE.Points>(null);
+  const materialRef = useRef<THREE.PointsMaterial>(null);
   const [performanceLevel] = useState(() => getPerformanceLevel());
   
-  // 키워드 기반 지오메트리 생성
-  const geometry = useMemo(() => createGenerativeArt(keyword, performanceLevel), [keyword, performanceLevel]);
+  // 키워드 기반 궤적 라인 생성
+  const geometry = useMemo(() => createTrajectoryLines(keyword, performanceLevel), [keyword, performanceLevel]);
   
   // 원본 정점 위치 저장
   const originalPositions = useMemo(() => {
@@ -138,132 +192,97 @@ const GlitchMesh: React.FC<GlitchMeshProps> = ({ keyword }) => {
     
     const time = state.clock.elapsedTime * 1000;
     const positions = geometry.attributes.position.array as Float32Array;
+    const colors = geometry.attributes.color.array as Float32Array;
     
     // 성능에 따른 업데이트 빈도 조절
     const updateFrequency = performanceLevel === 'high' ? 1 : performanceLevel === 'medium' ? 2 : 3;
     if (Math.floor(time / 16) % updateFrequency !== 0) return;
     
-    // 파격적인 글리치 효과: 정점 위치 변형
+    // 궤적 라인 글리치 효과
     for (let i = 0; i < positions.length; i += 3) {
       const originalX = originalPositions[i];
       const originalY = originalPositions[i + 1];
       const originalZ = originalPositions[i + 2];
       
-      // 개선된 다층 노이즈 적용
-      const noiseX = improvedNoise(originalX * 3, originalY * 3, originalZ * 3, time) * 0.5;
-      const noiseY = improvedNoise(originalX * 2.5, originalY * 2.5, originalZ * 2.5, time * 1.2) * 0.5;
-      const noiseZ = improvedNoise(originalX * 2, originalY * 2, originalZ * 2, time * 0.8) * 0.5;
+      // 궤적별 글리치 강도 (라인의 위치에 따라)
+      const lineIndex = Math.floor(i / 3);
+      const glitchSeed = lineIndex * 0.1 + time * 0.001;
       
-      // 성능에 따른 글리치 강도 조절
-      const baseIntensity = performanceLevel === 'high' ? 1.2 : performanceLevel === 'medium' ? 0.8 : 0.5;
-      const timeBasedIntensity = Math.sin(time * 0.003) * 0.5 + 0.5; // 0~1 범위
-      const glitchIntensity = baseIntensity * timeBasedIntensity;
+      // 라인 특화 노이즈 (더 선형적이고 궤적다운)
+      const noiseX = improvedNoise(originalX * 1.5, time * 0.002, lineIndex * 0.1, time) * 0.3;
+      const noiseY = improvedNoise(originalY * 1.5, time * 0.003, lineIndex * 0.1, time) * 0.3;
+      const noiseZ = improvedNoise(originalZ * 1.5, time * 0.001, lineIndex * 0.1, time) * 0.2;
       
-      // 극한 글리치 효과 적용
-      const extremeX = extremeGlitch(originalX, time, glitchIntensity, i * 0.1);
-      const extremeY = extremeGlitch(originalY, time, glitchIntensity, i * 0.2);
-      const extremeZ = extremeGlitch(originalZ, time, glitchIntensity, i * 0.3);
+      // 궤적 흐름 효과 (점들이 연결되어 흐르는 느낌)
+      const flowEffect = Math.sin(time * 0.005 + lineIndex * 0.2) * 0.1;
       
-      // 최종 위치 계산 (노이즈 + 극한 글리치)
-      positions[i] = extremeX + noiseX * glitchIntensity;
-      positions[i + 1] = extremeY + noiseY * glitchIntensity;
-      positions[i + 2] = extremeZ + noiseZ * glitchIntensity;
-      
-      // 불규칙한 스케일 변화 (일부 정점만)
-      if (i % 9 === 0) { // 9개 정점마다
-        const scaleNoise = improvedNoise(i * 0.01, time * 0.005, 0, 0);
-        const scale = 1 + scaleNoise * 0.3;
-        positions[i] *= scale;
-        positions[i + 1] *= scale;
-        positions[i + 2] *= scale;
+      // 극한 글리치 (5% 확률로 궤적이 완전히 다른 곳으로)
+      if (Math.random() < 0.05) {
+        positions[i] = originalX + (Math.random() - 0.5) * 8;
+        positions[i + 1] = originalY + (Math.random() - 0.5) * 8;
+        positions[i + 2] = originalZ + (Math.random() - 0.5) * 4;
+        
+        // 색상도 극한 변화
+        colors[i] = Math.random();
+        colors[i + 1] = Math.random();
+        colors[i + 2] = Math.random();
+      } else {
+        // 일반적인 궤적 변형
+        positions[i] = originalX + noiseX + flowEffect;
+        positions[i + 1] = originalY + noiseY + flowEffect * 0.5;
+        positions[i + 2] = originalZ + noiseZ + flowEffect * 0.3;
+        
+        // 색상 강도 변화 (네온 효과)
+        const intensity = 0.8 + Math.sin(time * 0.01 + lineIndex * 0.1) * 0.2;
+        colors[i] *= intensity;
+        colors[i + 1] *= intensity;
+        colors[i + 2] *= intensity;
       }
     }
     
     geometry.attributes.position.needsUpdate = true;
-    geometry.computeVertexNormals();
+    geometry.attributes.color.needsUpdate = true;
     
-    // 파격적인 색상 변화 (더 빠르고 극적인 변화)
-    const newColor = createColorFromKeyword(keyword, time);
-    
-    // 색상 극한 글리치 (가끔 완전히 다른 색상으로 점프)
-    if (Math.random() < 0.03) { // 3% 확률
-      const glitchColors = [
-        new THREE.Color('#FFFFFF'), // 순백
-        new THREE.Color('#000000'), // 순흑
-        new THREE.Color('#FF0000'), // 순빨강
-        new THREE.Color('#00FF00'), // 순초록
-        new THREE.Color('#0000FF'), // 순파랑
-      ];
-      const randomColor = glitchColors[Math.floor(Math.random() * glitchColors.length)];
-      materialRef.current.color.copy(randomColor);
-    } else {
-      materialRef.current.color.copy(newColor);
-    }
-    
-    // 불규칙한 회전 (때로는 급격한 변화)
-    const rotationGlitch = Math.random() < 0.02; // 2% 확률로 급격한 회전
+    // 전체 궤적 시스템 회전 (더 역동적으로)
+    const rotationGlitch = Math.random() < 0.03;
     
     if (rotationGlitch) {
-      meshRef.current.rotation.x += (Math.random() - 0.5) * 0.5;
-      meshRef.current.rotation.y += (Math.random() - 0.5) * 0.5;
-      meshRef.current.rotation.z += (Math.random() - 0.5) * 0.5;
+      meshRef.current.rotation.x += (Math.random() - 0.5) * 0.3;
+      meshRef.current.rotation.y += (Math.random() - 0.5) * 0.3;
+      meshRef.current.rotation.z += (Math.random() - 0.5) * 0.3;
     } else {
-      // 일반적인 회전에도 불규칙성 추가
-      const rotSpeedX = 0.005 + Math.sin(time * 0.001) * 0.003;
-      const rotSpeedY = 0.008 + Math.cos(time * 0.0015) * 0.005;
-      const rotSpeedZ = 0.003 + Math.sin(time * 0.0008) * 0.002;
-      
-      meshRef.current.rotation.x += rotSpeedX;
-      meshRef.current.rotation.y += rotSpeedY;
-      meshRef.current.rotation.z += rotSpeedZ;
+      meshRef.current.rotation.x += 0.002;
+      meshRef.current.rotation.y += 0.005;
+      meshRef.current.rotation.z += 0.001;
     }
     
-    // 극한 글리치 점프 효과 (더 파격적이고 불규칙하게)
-    const jumpChance = performanceLevel === 'high' ? 0.04 : 0.02; // 확률 증가
-    const randomValue = Math.random();
-    
-    if (randomValue < jumpChance) {
-      // 극한 공간 이동
-      const intensity = 2 + Math.random() * 3; // 1~5 범위
+    // 전체 시스템 진동과 이동
+    const vibrationChance = performanceLevel === 'high' ? 0.08 : 0.04;
+    if (Math.random() < vibrationChance) {
+      const intensity = 1 + Math.random() * 2;
       meshRef.current.position.x = (Math.random() - 0.5) * intensity;
       meshRef.current.position.y = (Math.random() - 0.5) * intensity;
       meshRef.current.position.z = (Math.random() - 0.5) * intensity * 0.5;
-      
-      // 크기도 급격하게 변화
-      const scale = 0.3 + Math.random() * 1.4; // 0.3~1.7 범위
-      meshRef.current.scale.setScalar(scale);
-    } else if (randomValue < jumpChance * 3) {
-      // 중간 강도 진동
-      const vibration = 0.1;
-      meshRef.current.position.x += (Math.random() - 0.5) * vibration;
-      meshRef.current.position.y += (Math.random() - 0.5) * vibration;
-      meshRef.current.position.z += (Math.random() - 0.5) * vibration;
     } else {
-      // 원래 위치와 크기로 서서히 복귀
-      meshRef.current.position.x *= 0.92;
-      meshRef.current.position.y *= 0.92;
-      meshRef.current.position.z *= 0.92;
-      
-      // 크기도 서서히 정상화
-      const currentScale = meshRef.current.scale.x;
-      const targetScale = 1.0;
-      const newScale = currentScale + (targetScale - currentScale) * 0.05;
-      meshRef.current.scale.setScalar(newScale);
+      // 중심으로 복귀
+      meshRef.current.position.x *= 0.95;
+      meshRef.current.position.y *= 0.95;
+      meshRef.current.position.z *= 0.95;
     }
   });
   
   return (
-    <mesh ref={meshRef} geometry={geometry}>
-      <meshStandardMaterial
+    <points ref={meshRef} geometry={geometry}>
+      <pointsMaterial
         ref={materialRef}
-        color="#FF00FF"
-        emissive="#330033"
-        emissiveIntensity={0.3}
-        wireframe={false}
+        vertexColors={true}
         transparent={true}
-        opacity={0.9}
+        opacity={0.8}
+        size={4}
+        sizeAttenuation={false}
+        blending={THREE.AdditiveBlending}
       />
-    </mesh>
+    </points>
   );
 };
 
