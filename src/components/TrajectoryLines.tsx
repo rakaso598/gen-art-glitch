@@ -17,8 +17,8 @@ const createNeonTrajectoryLines = (keyword: string, performanceLevel: string) =>
   }, 0);
 
   // 훨씬 더 많은 궤적으로 압도적인 밀도 - 우주적 복잡성
-  const trajectoryCount = performanceLevel === 'high' ? 60 : performanceLevel === 'medium' ? 40 : 25;
-  const pointsPerTrajectory = performanceLevel === 'high' ? 300 : performanceLevel === 'medium' ? 200 : 120;
+  const trajectoryCount = performanceLevel === 'high' ? 25 : performanceLevel === 'medium' ? 18 : 12;
+  const pointsPerTrajectory = performanceLevel === 'high' ? 150 : performanceLevel === 'medium' ? 100 : 80;
 
   const random = (seed: number) => {
     const x = Math.sin(seed) * 10000;
@@ -29,23 +29,23 @@ const createNeonTrajectoryLines = (keyword: string, performanceLevel: string) =>
   const vertices: number[] = [];
   const colors: number[] = [];
 
-  // 기하학적 섬뜩함을 위한 어둡고 차분한 색상 팔레트
+  // 극도로 어둡고 섬뜩한 색상 팔레트
   const cosmicColors = [
-    [0.08, 0.02, 0.15],    // 깊은 보라 어둠
-    [0.02, 0.06, 0.20],    // 심연의 청색
-    [0.12, 0.02, 0.06],    // 어둠의 적색
-    [0.02, 0.10, 0.08],    // 차분한 녹색
-    [0.15, 0.08, 0.02],    // 어둠의 주황
-    [0.08, 0.02, 0.12],    // 자주빛 그림자
-    [0.02, 0.12, 0.15],    // 깊은 청록
-    [0.12, 0.06, 0.02],    // 어둠의 황색
-    [0.18, 0.02, 0.18],    // 보라빛 무
-    [0.02, 0.08, 0.18],    // 얼어붙은 청색
-    [0.10, 0.10, 0.02],    // 병든 황록
-    [0.15, 0.02, 0.08],    // 진홍 그림자
-    [0.02, 0.15, 0.06],    // 독성 그림자
-    [0.08, 0.12, 0.02],    // 썩은 녹황
-    [0.20, 0.04, 0.02],    // 지옥의 어둠
+    [0.03, 0.01, 0.08],    // 깊은 보라 어둠
+    [0.01, 0.03, 0.10],    // 심연의 청색
+    [0.05, 0.01, 0.02],    // 어둠의 적색
+    [0.01, 0.05, 0.03],    // 차분한 녹색
+    [0.06, 0.03, 0.01],    // 어둠의 주황
+    [0.04, 0.01, 0.05],    // 자주빛 그림자
+    [0.01, 0.04, 0.06],    // 깊은 청록
+    [0.05, 0.02, 0.01],    // 어둠의 황색
+    [0.07, 0.01, 0.07],    // 보라빛 무
+    [0.01, 0.03, 0.07],    // 얼어붙은 청색
+    [0.03, 0.03, 0.01],    // 병든 황록
+    [0.06, 0.01, 0.03],    // 진홍 그림자
+    [0.01, 0.06, 0.02],    // 독성 그림자
+    [0.03, 0.04, 0.01],    // 썩은 녹황
+    [0.08, 0.02, 0.01],    // 지옥의 어둠
   ];
 
   for (let t = 0; t < trajectoryCount; t++) {
@@ -280,10 +280,10 @@ const createNeonTrajectoryLines = (keyword: string, performanceLevel: string) =>
       vertices.push(prevX, prevY, prevZ);
       vertices.push(x, y, z);
 
-      // 기하학적 섬뜩함을 위한 절제된 색상 강도
-      const baseIntensity = 0.15 + progress * 0.25;
-      const cosmicPulse = Math.sin(progress * Math.PI * 8) * 0.15;
-      const voidFlicker = Math.sin(progress * Math.PI * 20) * 0.1;
+      // 극도로 절제된 색상 강도
+      const baseIntensity = 0.08 + progress * 0.12;
+      const cosmicPulse = Math.sin(progress * Math.PI * 8) * 0.06;
+      const voidFlicker = Math.sin(progress * Math.PI * 20) * 0.04;
       const intensity = baseIntensity + cosmicPulse + voidFlicker;
       
       // 색상에 기하학적 변조 추가 - 더 어둡고 절제된
@@ -409,9 +409,9 @@ const TrajectoryLines: React.FC<TrajectoryLinesProps> = ({ keyword }) => {
         ref={materialRef}
         vertexColors={true}
         transparent={true}
-        opacity={0.45}
-        blending={THREE.AdditiveBlending}
-        linewidth={1.2}
+        opacity={0.25}
+        blending={THREE.NormalBlending}
+        linewidth={0.8}
       />
     </lineSegments>
   );

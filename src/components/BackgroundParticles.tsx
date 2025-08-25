@@ -15,31 +15,31 @@ const BackgroundParticles: React.FC<BackgroundParticlesProps> = ({ keyword }) =>
 
   // 극한 네온 파티클 생성
   const { geometry, originalPositions } = useMemo(() => {
-    // 성능에 따른 파티클 수 조절 - 우주의 무한성 표현
-    const baseParticleCount = performanceLevel === 'high' ? 8000 : performanceLevel === 'medium' ? 5000 : 3000;
-    const particleCount = Math.min(baseParticleCount + keyword.length * 200, baseParticleCount * 3);
+    // 성능에 따른 파티클 수 조절 - 적당한 밀도
+    const baseParticleCount = performanceLevel === 'high' ? 3000 : performanceLevel === 'medium' ? 2000 : 1200;
+    const particleCount = Math.min(baseParticleCount + keyword.length * 100, baseParticleCount * 2);
 
     const positions = new Float32Array(particleCount * 3);
     const colors = new Float32Array(particleCount * 3);
     const originalPos = new Float32Array(particleCount * 3);
 
-    // 기하학적 섬뜩함을 위한 어둠의 색상 팔레트
+    // 극도로 어둡고 절제된 색상 팔레트
     const cosmicPalette = [
-      [0.04, 0.01, 0.08],    // 깊은 보라 어둠
-      [0.01, 0.04, 0.10],    // 심연의 청색
-      [0.06, 0.01, 0.03],    // 어둠의 적색
-      [0.01, 0.06, 0.05],    // 차분한 녹색
-      [0.08, 0.04, 0.01],    // 어둠의 주황
-      [0.05, 0.01, 0.06],    // 자주빛 그림자
-      [0.01, 0.06, 0.08],    // 깊은 청록
-      [0.06, 0.03, 0.01],    // 어둠의 황색
-      [0.09, 0.01, 0.09],    // 보라빛 무
-      [0.01, 0.04, 0.09],    // 얼어붙은 청색
-      [0.05, 0.05, 0.01],    // 병든 황록
-      [0.08, 0.01, 0.04],    // 진홍 그림자
-      [0.01, 0.08, 0.03],    // 독성 그림자
-      [0.04, 0.06, 0.01],    // 썩은 녹황
-      [0.10, 0.02, 0.01],    // 지옥의 어둠
+      [0.02, 0.005, 0.04],   // 깊은 보라 어둠
+      [0.005, 0.02, 0.05],   // 심연의 청색
+      [0.03, 0.005, 0.015],  // 어둠의 적색
+      [0.005, 0.03, 0.025],  // 차분한 녹색
+      [0.04, 0.02, 0.005],   // 어둠의 주황
+      [0.025, 0.005, 0.03],  // 자주빛 그림자
+      [0.005, 0.03, 0.04],   // 깊은 청록
+      [0.03, 0.015, 0.005],  // 어둠의 황색
+      [0.045, 0.005, 0.045], // 보라빛 무
+      [0.005, 0.02, 0.045],  // 얼어붙은 청색
+      [0.025, 0.025, 0.005], // 병든 황록
+      [0.04, 0.005, 0.02],   // 진홍 그림자
+      [0.005, 0.04, 0.015],  // 독성 그림자
+      [0.02, 0.03, 0.005],   // 썩은 녹황
+      [0.05, 0.01, 0.005],   // 지옥의 어둠
     ];
 
     // 파티클 초기 위치와 색상 설정 - 우주적 분포
@@ -190,10 +190,10 @@ const BackgroundParticles: React.FC<BackgroundParticlesProps> = ({ keyword }) =>
       originalPos[i3 + 1] = y;
       originalPos[i3 + 2] = z;
 
-      // 기하학적 어둠의 색상
+      // 극도로 어두운 색상
       const colorIndex = (hash + i) % cosmicPalette.length;
       const [r, g, b] = cosmicPalette[colorIndex];
-      const intensity = 0.15 + Math.random() * 0.15;
+      const intensity = 0.08 + Math.random() * 0.08;
       colors[i3] = r * intensity;
       colors[i3 + 1] = g * intensity;
       colors[i3 + 2] = b * intensity;
@@ -278,10 +278,10 @@ const BackgroundParticles: React.FC<BackgroundParticlesProps> = ({ keyword }) =>
       <pointsMaterial
         vertexColors={true}
         transparent={true}
-        opacity={0.35}
-        size={performanceLevel === 'high' ? 2 : 1.5}
+        opacity={0.15}
+        size={performanceLevel === 'high' ? 1.5 : 1}
         sizeAttenuation={false}
-        blending={THREE.AdditiveBlending}
+        blending={THREE.NormalBlending}
       />
     </points>
   );

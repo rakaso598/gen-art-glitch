@@ -66,13 +66,13 @@ const GlitchArtCanvas: React.FC<GlitchArtCanvasProps> = ({ keyword }) => {
           zoomSpeed={1.0}
         />
 
-        {/* 기하학적 섬뜩함을 위한 절제된 포스트 프로세싱 효과 */}
+        {/* 극도로 절제된 포스트 프로세싱 효과 */}
         {performanceLevel !== 'low' && (
           <EffectComposer>
             <Bloom
-              intensity={0.3}
-              luminanceThreshold={0.6}
-              luminanceSmoothing={0.8}
+              intensity={0.15}
+              luminanceThreshold={0.8}
+              luminanceSmoothing={0.9}
               blendFunction={BlendFunction.SCREEN}
             />
             <>
@@ -80,7 +80,7 @@ const GlitchArtCanvas: React.FC<GlitchArtCanvasProps> = ({ keyword }) => {
                 <Noise
                   premultiply
                   blendFunction={BlendFunction.MULTIPLY}
-                  opacity={0.25}
+                  opacity={0.3}
                 />
               )}
             </>
