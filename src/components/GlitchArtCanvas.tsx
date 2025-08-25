@@ -34,13 +34,15 @@ const GlitchArtCanvas: React.FC<GlitchArtCanvasProps> = ({ keyword }) => {
       >
         <PerspectiveCamera makeDefault position={[0, 0, 5]} />
 
-        {/* 조명 설정 - 모바일에서는 간소화 */}
-        <ambientLight intensity={mobile ? 0.4 : 0.3} />
-        <pointLight position={[10, 10, 10]} intensity={mobile ? 0.7 : 1} color="#FF00FF" />
+        {/* 우주적 섬뜩함을 위한 어둠 조명 */}
+        <ambientLight intensity={0.05} />
+        <pointLight position={[15, 15, 15]} intensity={0.3} color="#0A0A2E" />
+        <pointLight position={[-15, -15, -15]} intensity={0.2} color="#16213E" />
+        <pointLight position={[0, 20, 0]} intensity={0.15} color="#1A1A40" />
         {!mobile && (
           <>
-            <pointLight position={[-10, -10, -10]} intensity={0.5} color="#00FFFF" />
-            <pointLight position={[5, -5, 5]} intensity={0.7} color="#CCFF00" />
+            <pointLight position={[10, -10, 5]} intensity={0.1} color="#0F0F23" />
+            <pointLight position={[-5, 5, -10]} intensity={0.1} color="#0E1B55" />
           </>
         )}
 
@@ -50,32 +52,35 @@ const GlitchArtCanvas: React.FC<GlitchArtCanvasProps> = ({ keyword }) => {
         {/* 궤적 라인 글리치 아트 */}
         <TrajectoryLines keyword={keyword} />
 
-        {/* 카메라 컨트롤 */}
+        {/* 자유로운 카메라 컨트롤 */}
         <OrbitControls
-          enablePan={false}
-          enableZoom={!mobile}
+          enablePan={true}
+          enableZoom={true}
           enableRotate={true}
-          autoRotate={true}
-          autoRotateSpeed={mobile ? 0.3 : 0.5}
-          maxDistance={10}
-          minDistance={2}
+          autoRotate={false}
+          autoRotateSpeed={0}
+          maxDistance={50}
+          minDistance={0.1}
+          panSpeed={1.5}
+          rotateSpeed={1.2}
+          zoomSpeed={1.0}
         />
 
-        {/* 포스트 프로세싱 효과 - 성능에 따라 조절 */}
+        {/* 우주적 섬뜩함을 위한 포스트 프로세싱 효과 */}
         {performanceLevel !== 'low' && (
           <EffectComposer>
             <Bloom
-              intensity={mobile ? 1.0 : 1.5}
-              luminanceThreshold={0.2}
-              luminanceSmoothing={0.9}
-              blendFunction={BlendFunction.ADD}
+              intensity={0.8}
+              luminanceThreshold={0.1}
+              luminanceSmoothing={0.3}
+              blendFunction={BlendFunction.SCREEN}
             />
             <>
               {performanceLevel === 'high' && (
                 <Noise
                   premultiply
-                  blendFunction={BlendFunction.ADD}
-                  opacity={0.1}
+                  blendFunction={BlendFunction.MULTIPLY}
+                  opacity={0.15}
                 />
               )}
             </>

@@ -122,7 +122,8 @@ const createTrajectoryLines = (keyword: string, performanceLevel: string) => {
   return geometry;
 };
 
-// 키워드에 따른 색상 생성 함수
+// 키워드에 따른 색상 생성 함수 (현재 미사용)
+/*
 const createColorFromKeyword = (keyword: string, time: number) => {
   const hash = keyword.split('').reduce((a, b) => {
     a = ((a << 5) - a) + b.charCodeAt(0);
@@ -146,6 +147,7 @@ const createColorFromKeyword = (keyword: string, time: number) => {
 
   return new THREE.Color().copy(baseColor).multiplyScalar(1 + colorShift);
 };
+*/
 
 // 파격적인 Perlin noise 함수 (개선된 버전)
 const improvedNoise = (x: number, y: number, z: number, time: number) => {
@@ -158,7 +160,8 @@ const improvedNoise = (x: number, y: number, z: number, time: number) => {
   return (noise1 * 0.5 + noise2 * 0.3 + noise3 * 0.2);
 };
 
-// 극한 글리치 효과 함수
+// 극한 글리치 효과 함수 (현재 미사용)
+/*
 const extremeGlitch = (original: number, time: number, intensity: number, seed: number) => {
   const glitchChance = 0.05; // 5% 확률로 극한 글리치
   const randomValue = (Math.sin(seed + time * 0.01) * 43758.5453) % 1;
@@ -170,6 +173,7 @@ const extremeGlitch = (original: number, time: number, intensity: number, seed: 
 
   return original;
 };
+*/
 
 const GlitchMesh: React.FC<GlitchMeshProps> = ({ keyword }) => {
   const meshRef = useRef<THREE.Points>(null);
@@ -206,7 +210,7 @@ const GlitchMesh: React.FC<GlitchMeshProps> = ({ keyword }) => {
 
       // 궤적별 글리치 강도 (라인의 위치에 따라)
       const lineIndex = Math.floor(i / 3);
-      const glitchSeed = lineIndex * 0.1 + time * 0.001;
+      // const glitchSeed = lineIndex * 0.1 + time * 0.001; // 현재 미사용
 
       // 라인 특화 노이즈 (더 선형적이고 궤적다운)
       const noiseX = improvedNoise(originalX * 1.5, time * 0.002, lineIndex * 0.1, time) * 0.3;

@@ -15,117 +15,164 @@ const BackgroundParticles: React.FC<BackgroundParticlesProps> = ({ keyword }) =>
 
   // 극한 네온 파티클 생성
   const { geometry, originalPositions } = useMemo(() => {
-    // 성능에 따른 파티클 수 조절 - 더 많은 파티클로
-    const baseParticleCount = performanceLevel === 'high' ? 4000 : performanceLevel === 'medium' ? 2500 : 1500;
-    const particleCount = Math.min(baseParticleCount + keyword.length * 100, baseParticleCount * 2.5);
+    // 성능에 따른 파티클 수 조절 - 우주의 무한성 표현
+    const baseParticleCount = performanceLevel === 'high' ? 8000 : performanceLevel === 'medium' ? 5000 : 3000;
+    const particleCount = Math.min(baseParticleCount + keyword.length * 200, baseParticleCount * 3);
 
     const positions = new Float32Array(particleCount * 3);
     const colors = new Float32Array(particleCount * 3);
     const originalPos = new Float32Array(particleCount * 3);
 
-    // 강렬한 네온 색상 팔레트
-    const neonPalette = [
-      [1, 0, 1],         // 마젠타
-      [0, 1, 1],         // 시안  
-      [1, 1, 0],         // 옐로우
-      [1, 0.1, 0.9],     // 핫핑크
-      [0.1, 0.9, 1],     // 딥스카이
-      [1, 0.5, 0],       // 오렌지
-      [0.5, 0, 1],       // 바이올렛
-      [0, 1, 0.3],       // 스프링그린
-      [1, 0, 0.5],       // 딥핑크
-      [0.3, 1, 0],       // 라임그린
-      [0, 0.5, 1],       // 도저블루
-      [1, 0.8, 0],       // 골드
+    // 우주적 섬뜩함을 위한 어둠의 색상 팔레트
+    const cosmicPalette = [
+      [0.1, 0.02, 0.2],    // 심연의 보라
+      [0.02, 0.1, 0.25],   // 우주의 푸른 어둠
+      [0.15, 0.02, 0.08],  // 피의 어둠
+      [0.02, 0.15, 0.12],  // 독의 초록
+      [0.2, 0.1, 0.02],    // 녹슨 금속
+      [0.12, 0.02, 0.15],  // 자주빛 어둠
+      [0.02, 0.18, 0.2],   // 심해의 청록
+      [0.18, 0.08, 0.02],  // 타오르는 어둠
+      [0.25, 0.02, 0.25],  // 보라빛 공허
+      [0.02, 0.12, 0.22],  // 얼어붙은 파랑
+      [0.15, 0.15, 0.02],  // 병든 황금
+      [0.2, 0.02, 0.1],    // 어둠의 진홍
+      [0.02, 0.2, 0.08],   // 독성 녹색
+      [0.12, 0.18, 0.02],  // 썩은 황록
+      [0.3, 0.05, 0.02],   // 지옥의 주황
     ];
 
-    // 파티클 초기 위치와 색상 설정
+    // 파티클 초기 위치와 색상 설정 - 우주적 분포
     for (let i = 0; i < particleCount; i++) {
       const i3 = i * 3;
 
-      // 키워드 기반 분포 패턴 - 더 다양한 패턴
+      // 키워드 기반 분포 패턴 - 더 많은 우주적 패턴
       const hash = keyword.charCodeAt(i % keyword.length) + i;
-      const pattern = hash % 8;
+      const pattern = hash % 12;
 
       let x, y, z;
 
       switch (pattern) {
-        case 0: // 구형 분포 - 더 넓은 범위
-          const radius = 10 + Math.random() * 30;
-          const theta = Math.random() * Math.PI * 2;
-          const phi = Math.random() * Math.PI;
-          x = radius * Math.sin(phi) * Math.cos(theta);
-          y = radius * Math.sin(phi) * Math.sin(theta);
-          z = radius * Math.cos(phi);
+        case 0: // 사건의 지평선 - 블랙홀 주변 분포
+          const eventHorizonRadius = 20 + Math.random() * 60;
+          const singularityPull = Math.random() * Math.PI * 2;
+          const spacetimeCurvature = Math.random() * Math.PI;
+          x = eventHorizonRadius * Math.sin(spacetimeCurvature) * Math.cos(singularityPull);
+          y = eventHorizonRadius * Math.sin(spacetimeCurvature) * Math.sin(singularityPull);
+          z = eventHorizonRadius * Math.cos(spacetimeCurvature);
           break;
 
-        case 1: // 나선형 분포 - 더 복잡한 나선
-          const angle = i * 0.3;
-          const spiralRadius = 8 + i * 0.03;
-          x = spiralRadius * Math.cos(angle) + Math.sin(angle * 3) * 3;
-          y = (i - particleCount / 2) * 0.1;
-          z = spiralRadius * Math.sin(angle) + Math.cos(angle * 2) * 3;
+        case 1: // 우주적 나선 - 은하계 구조
+          const galacticAngle = i * 0.5;
+          const galacticRadius = 15 + i * 0.05;
+          const galacticArm = Math.sin(galacticAngle * 0.1) * 8;
+          x = galacticRadius * Math.cos(galacticAngle) + galacticArm;
+          y = (i - particleCount / 2) * 0.15;
+          z = galacticRadius * Math.sin(galacticAngle) + galacticArm * 0.5;
           break;
 
-        case 2: // 클러스터 분포 - 더 많은 클러스터
-          const clusterIndex = Math.floor(Math.random() * 8);
-          const clusterCenters = [
-            [12, 0, 0], [-12, 0, 0], [0, 12, 0], [0, -12, 0],
-            [0, 0, 12], [0, 0, -12], [8, 8, 0], [-8, -8, 0]
+        case 2: // 우주 보이드 - 거대한 공허 주변
+          const voidIndex = Math.floor(Math.random() * 12);
+          const voidCenters = [
+            [25, 0, 0], [-25, 0, 0], [0, 25, 0], [0, -25, 0],
+            [0, 0, 25], [0, 0, -25], [18, 18, 0], [-18, -18, 0],
+            [18, 0, 18], [-18, 0, -18], [0, 18, 18], [0, -18, -18]
           ];
-          const center = clusterCenters[clusterIndex];
-          x = center[0] + (Math.random() - 0.5) * 8;
-          y = center[1] + (Math.random() - 0.5) * 8;
-          z = center[2] + (Math.random() - 0.5) * 8;
+          const voidCenter = voidCenters[voidIndex];
+          x = voidCenter[0] + (Math.random() - 0.5) * 15;
+          y = voidCenter[1] + (Math.random() - 0.5) * 15;
+          z = voidCenter[2] + (Math.random() - 0.5) * 15;
           break;
 
-        case 3: // 원환체(토러스) 분포
-          const torusAngle = Math.random() * Math.PI * 2;
-          const torusPhi = Math.random() * Math.PI * 2;
-          const majorRadius = 12;
-          const minorRadius = 4;
-          x = (majorRadius + minorRadius * Math.cos(torusPhi)) * Math.cos(torusAngle);
-          y = (majorRadius + minorRadius * Math.cos(torusPhi)) * Math.sin(torusAngle);
-          z = minorRadius * Math.sin(torusPhi);
+        case 3: // 차원 고리 - 고차원 토러스
+          const dimensionalAngle = Math.random() * Math.PI * 2;
+          const dimensionalPhi = Math.random() * Math.PI * 2;
+          const cosmicRadius = 20;
+          const dimensionalRadius = 8;
+          x = (cosmicRadius + dimensionalRadius * Math.cos(dimensionalPhi)) * Math.cos(dimensionalAngle);
+          y = (cosmicRadius + dimensionalRadius * Math.cos(dimensionalPhi)) * Math.sin(dimensionalAngle);
+          z = dimensionalRadius * Math.sin(dimensionalPhi);
           break;
 
-        case 4: // 카오스 분포 - 완전히 무작위
-          x = (Math.random() - 0.5) * 40 + Math.sin(i * 0.1) * 8;
-          y = (Math.random() - 0.5) * 40 + Math.cos(i * 0.1) * 8;
-          z = (Math.random() - 0.5) * 25 + Math.sin(i * 0.05) * 5;
+        case 4: // 양자 거품 - 양자 요동 분포
+          const quantumScale = 80;
+          x = (Math.random() - 0.5) * quantumScale + Math.sin(i * 0.05) * 15;
+          y = (Math.random() - 0.5) * quantumScale + Math.cos(i * 0.05) * 15;
+          z = (Math.random() - 0.5) * quantumScale * 0.6 + Math.sin(i * 0.02) * 8;
           break;
 
-        case 5: // 프랙탈 분포
-          const fractalLevel = 4;
+        case 5: // 무한 프랙탈 - 자기 유사성의 공포
+          const infiniteLevels = 6;
           x = 0; y = 0; z = 0;
-          for (let f = 0; f < fractalLevel; f++) {
-            const scale = Math.pow(0.5, f);
-            x += (Math.random() - 0.5) * 20 * scale;
-            y += (Math.random() - 0.5) * 20 * scale;
-            z += (Math.random() - 0.5) * 15 * scale;
+          for (let f = 0; f < infiniteLevels; f++) {
+            const scale = Math.pow(0.6, f);
+            const frequency = Math.pow(2, f);
+            x += (Math.random() - 0.5) * 40 * scale * Math.sin(i * frequency * 0.01);
+            y += (Math.random() - 0.5) * 40 * scale * Math.cos(i * frequency * 0.01);
+            z += (Math.random() - 0.5) * 25 * scale * Math.sin(i * frequency * 0.005);
           }
           break;
 
-        case 6: // DNA 이중 나선
-          const dnaAngle = i * 0.2;
-          const dnaRadius = 6;
-          const dnaHeight = (i - particleCount / 2) * 0.05;
-          if (i % 2 === 0) {
-            x = dnaRadius * Math.cos(dnaAngle);
-            z = dnaRadius * Math.sin(dnaAngle);
-          } else {
-            x = dnaRadius * Math.cos(dnaAngle + Math.PI);
-            z = dnaRadius * Math.sin(dnaAngle + Math.PI);
-          }
-          y = dnaHeight;
+        case 6: // 외계 DNA - 비정상적인 삼중 나선
+          const alienDnaAngle = i * 0.4;
+          const alienDnaRadius = 12;
+          const alienHeight = (i - particleCount / 2) * 0.08;
+          const geneticStrand = i % 3;
+          const strandOffset = (geneticStrand * Math.PI * 2) / 3;
+          x = alienDnaRadius * Math.cos(alienDnaAngle + strandOffset);
+          z = alienDnaRadius * Math.sin(alienDnaAngle + strandOffset);
+          y = alienHeight + Math.sin(alienDnaAngle * 3) * 3;
           break;
 
-        case 7: // 파도형 분포
-          const waveX = (i % 100) - 50;
-          const waveZ = Math.floor(i / 100) - 50;
-          x = waveX * 0.5;
-          y = Math.sin(waveX * 0.3) * Math.cos(waveZ * 0.3) * 8;
-          z = waveZ * 0.5;
+        case 7: // 시공간 파동 - 중력파 분포
+          const gravitationalWaveX = (i % 150) - 75;
+          const gravitationalWaveZ = Math.floor(i / 150) - 75;
+          const waveAmplitude = 15;
+          x = gravitationalWaveX * 0.8;
+          y = Math.sin(gravitationalWaveX * 0.2) * Math.cos(gravitationalWaveZ * 0.2) * waveAmplitude;
+          z = gravitationalWaveZ * 0.8;
+          break;
+
+        case 8: // 웜홀 네트워크 - 연결된 포털들
+          const wormholeNodes = 8;
+          const nodeIndex = i % wormholeNodes;
+          const nodeAngle = (nodeIndex / wormholeNodes) * Math.PI * 2;
+          const networkRadius = 30;
+          const localRadius = 8;
+          const nodeX = networkRadius * Math.cos(nodeAngle);
+          const nodeY = networkRadius * Math.sin(nodeAngle);
+          x = nodeX + (Math.random() - 0.5) * localRadius;
+          y = nodeY + (Math.random() - 0.5) * localRadius;
+          z = (Math.random() - 0.5) * localRadius;
+          break;
+
+        case 9: // 양자 얽힘 클러스터 - 상호연결된 입자들
+          const entanglementPairs = Math.floor(particleCount / 2);
+          const pairIndex = i % entanglementPairs;
+          const entanglementAngle = (pairIndex / entanglementPairs) * Math.PI * 2;
+          const entanglementRadius = 25;
+          const isFirstParticle = i < entanglementPairs;
+          x = entanglementRadius * Math.cos(entanglementAngle) * (isFirstParticle ? 1 : -1);
+          y = entanglementRadius * Math.sin(entanglementAngle) * (isFirstParticle ? 1 : -1);
+          z = (Math.random() - 0.5) * 10;
+          break;
+
+        case 10: // 다크 에너지 필라멘트 - 우주 거대구조
+          const filamentLength = 60;
+          const filamentThickness = 5;
+          const filamentProgress = (i / particleCount) * filamentLength - filamentLength / 2;
+          const filamentRadius = Math.sin(filamentProgress * 0.1) * filamentThickness;
+          x = filamentProgress;
+          y = filamentRadius * Math.cos(i * 0.5);
+          z = filamentRadius * Math.sin(i * 0.5);
+          break;
+
+        case 11: // 멀티버스 막 - 평행우주 경계
+          const membraneSize = 50;
+          const membraneThickness = 3;
+          x = (Math.random() - 0.5) * membraneSize;
+          y = (Math.random() - 0.5) * membraneSize;
+          z = (Math.random() - 0.5) * membraneThickness + Math.sin(x * 0.2 + y * 0.2) * 8;
           break;
 
         default:
@@ -143,10 +190,10 @@ const BackgroundParticles: React.FC<BackgroundParticlesProps> = ({ keyword }) =>
       originalPos[i3 + 1] = y;
       originalPos[i3 + 2] = z;
 
-      // 더 강렬한 네온 색상
-      const colorIndex = (hash + i) % neonPalette.length;
-      const [r, g, b] = neonPalette[colorIndex];
-      const intensity = 0.8 + Math.random() * 0.2;
+      // 우주적 어둠의 색상
+      const colorIndex = (hash + i) % cosmicPalette.length;
+      const [r, g, b] = cosmicPalette[colorIndex];
+      const intensity = 0.4 + Math.random() * 0.3;
       colors[i3] = r * intensity;
       colors[i3 + 1] = g * intensity;
       colors[i3 + 2] = b * intensity;
