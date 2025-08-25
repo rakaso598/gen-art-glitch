@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef, useState, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
@@ -9,10 +9,19 @@ interface JumpscareFlashProps {
 }
 
 // 갑작스러운 점프케어 효과
-const JumpscareFlash: React.FC<JumpscareFlashProps> = ({ keyword: _keyword }) => {
+const JumpscareFlash: React.FC<JumpscareFlashProps> = ({ keyword }) => {
   const meshRef = useRef<THREE.Mesh>(null);
   const [isFlashing, setIsFlashing] = useState(false);
   const [lastFlash, setLastFlash] = useState(0);
+
+  // 키워드 기반 플래시 강도 계산
+  const flashIntensity = useMemo(() => {
+    const hash = keyword.split('').reduce((a, b) => {
+      a = ((a << 5) - a) + b.charCodeAt(0);
+      return a & a;
+    }, 0);
+    return 0.5 + (Math.abs(hash) % 100) / 200; // 0.5 ~ 1.0
+  }, [keyword]);
 
   useFrame((state) => {
     if (!meshRef.current) return;
@@ -33,7 +42,7 @@ const JumpscareFlash: React.FC<JumpscareFlashProps> = ({ keyword: _keyword }) =>
     // 플래시 효과 중일 때
     if (isFlashing) {
       meshRef.current.scale.setScalar(50); // 화면 전체를 덮음
-      (meshRef.current.material as THREE.MeshBasicMaterial).opacity = 0.8;
+      (meshRef.current.material as THREE.MeshBasicMaterial).opacity = flashIntensity;
     } else {
       meshRef.current.scale.setScalar(0.01); // 보이지 않게
       (meshRef.current.material as THREE.MeshBasicMaterial).opacity = 0;
