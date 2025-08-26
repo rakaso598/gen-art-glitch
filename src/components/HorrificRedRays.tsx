@@ -21,8 +21,8 @@ const createHorrificRedRays = (keyword: string, performanceLevel: string) => {
     return x - Math.floor(x);
   };
 
-  // 성능에 따른 광선 수량 조절 (대폭 감소)
-  const rayCount = performanceLevel === 'high' ? 30 : performanceLevel === 'medium' ? 15 : 8;
+  // 성능에 따른 광선 수량 조절 (더 많이, 더 무섭게)
+  const rayCount = performanceLevel === 'high' ? 50 : performanceLevel === 'medium' ? 25 : 12;
 
   const vertices: number[] = [];
   const colors: number[] = [];
@@ -146,38 +146,54 @@ const HorrificRedRays: React.FC<HorrificRedRaysProps> = ({ keyword }) => {
     const mesh = meshRef.current;
 
     // 성능에 따른 애니메이션 빈도 조절
-    const animationSpeed = performanceLevel === 'high' ? 1.0 : performanceLevel === 'medium' ? 0.7 : 0.5;
+    const animationSpeed = performanceLevel === 'high' ? 1.5 : performanceLevel === 'medium' ? 1.0 : 0.7;
 
-    // 끔찍한 펄스 효과 (성능 최적화)
-    const pulseIntensity = 0.5 + Math.sin(time * 2 * animationSpeed) * 0.2;
+    // 더 무서운 펄스 효과
+    const pulseIntensity = 0.8 + Math.sin(time * 3 * animationSpeed) * 0.5 + Math.sin(time * 5 * animationSpeed) * 0.3;
 
-    // 머티리얼 emissive 강도 조절 (업데이트 빈도 감소)
-    if (Math.floor(time * 30) % 2 === 0) { // 30fps 대신 15fps로 업데이트
-      materialRef.current.emissive.setRGB(
-        pulseIntensity * 0.6, // 빨강 강도 감소
-        pulseIntensity * 0.05, // 초록 (거의 없음)
-        0 // 파랑 (없음)
-      );
-    }
+    // 더 강렬한 emissive 효과 (더 자주 업데이트)
+    materialRef.current.emissive.setRGB(
+      pulseIntensity * 1.2, // 빨강 강도 증가
+      pulseIntensity * 0.1, // 약간의 초록
+      pulseIntensity * 0.05 // 약간의 파랑
+    );
 
-    // 불안정한 회전 (속도 감소)
-    mesh.rotation.x += 0.0005 * animationSpeed;
-    mesh.rotation.y += 0.001 * animationSpeed;
-    mesh.rotation.z += 0.0002 * animationSpeed;
+    // 더 불안정하고 무서운 회전
+    mesh.rotation.x += 0.002 * animationSpeed + Math.random() * 0.001;
+    mesh.rotation.y += 0.003 * animationSpeed + Math.random() * 0.002;
+    mesh.rotation.z += 0.001 * animationSpeed + Math.random() * 0.0005;
 
-    // 갑작스러운 글리치 효과 (빈도 감소)
-    if (Math.random() > 0.995) { // 0.98에서 0.995로 변경
+    // 더 자주 발생하는 글리치 효과
+    if (Math.random() > 0.99) {
       mesh.scale.set(
-        1 + (Math.random() - 0.5) * 0.05, // 효과 강도 감소
-        1 + (Math.random() - 0.5) * 0.05,
-        1 + (Math.random() - 0.5) * 0.05
+        1 + (Math.random() - 0.5) * 0.3, // 효과 강도 증가
+        1 + (Math.random() - 0.5) * 0.3,
+        1 + (Math.random() - 0.5) * 0.3
+      );
+
+      // 위치도 갑작스럽게 변경
+      mesh.position.set(
+        (Math.random() - 0.5) * 2,
+        (Math.random() - 0.5) * 2,
+        (Math.random() - 0.5) * 1
       );
 
       setTimeout(() => {
         if (meshRef.current) {
           meshRef.current.scale.set(1, 1, 1);
+          meshRef.current.position.set(0, 0, 0);
         }
-      }, 50);
+      }, 100);
+    }
+
+    // 추가 무서운 효과: 가끔 완전히 사라졌다가 다시 나타남
+    if (Math.random() > 0.997) {
+      mesh.visible = false;
+      setTimeout(() => {
+        if (meshRef.current) {
+          meshRef.current.visible = true;
+        }
+      }, 50 + Math.random() * 200);
     }
   });
 

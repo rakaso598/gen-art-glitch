@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useMemo, useState } from 'react';
+import { useRef, useMemo, useState, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { getPerformanceLevel } from '@/utils/performance';
@@ -111,96 +111,136 @@ const CreepyGlitchMesh: React.FC<CreepyGlitchMeshProps> = ({ keyword }) => {
   const mainMeshRef = useRef<THREE.Mesh>(null);
   const fragmentMeshRef = useRef<THREE.Points>(null);
   const materialRef = useRef<THREE.MeshStandardMaterial>(null);
+  const originalVerticesRef = useRef<Float32Array | null>(null);
 
   const [performanceLevel] = useState(getPerformanceLevel());
   const [glitchTime, setGlitchTime] = useState(0);
   const [isGlitching, setIsGlitching] = useState(false);
+  const [lastJumpscare, setLastJumpscare] = useState(0);
 
-  // 지오메트리 생성
+  // 지오메트리 생성 (메모이제이션으로 불필요한 재생성 방지)
   const { mainGeometry, fragmentGeometry } = useMemo(() =>
     createCreepyGlitchEntity(keyword, performanceLevel), [keyword, performanceLevel]
   );
 
-  // 글리치 효과를 위한 원본 정점 저장
-  const originalVertices = useMemo(() => {
+  // 원본 정점 데이터 저장 (메모리 누수 방지)
+  useEffect(() => {
     const positions = mainGeometry.attributes.position.array as Float32Array;
-    return new Float32Array(positions);
+    originalVerticesRef.current = new Float32Array(positions);
+
+    // 컴포넌트 언마운트 시 정리
+    return () => {
+      if (originalVerticesRef.current) {
+        originalVerticesRef.current = null;
+      }
+    };
   }, [mainGeometry]);
 
   useFrame((state) => {
-    if (!mainMeshRef.current) return;
+    if (!mainMeshRef.current || !originalVerticesRef.current) return;
 
     const time = state.clock.elapsedTime;
     const mesh = mainMeshRef.current;
     const positions = mainGeometry.attributes.position.array as Float32Array;
 
-    // 글리치 타이밍 제어 (불규칙한 간격)
-    const glitchTrigger = Math.sin(time * 0.5) > 0.95 || Math.sin(time * 0.3 + 1) > 0.98;
+    // 글리치 타이밍 제어 (더 자주, 더 무섭게)
+    const glitchTrigger = Math.sin(time * 0.8) > 0.9 || Math.sin(time * 0.4 + 1) > 0.93 || Math.random() > 0.995;
 
     if (glitchTrigger && !isGlitching) {
       setIsGlitching(true);
       setGlitchTime(time);
     }
 
-    // 글리치 효과 적용
-    if (isGlitching && time - glitchTime < 0.3) {
-      // 정점 파괴 효과
+    // 더 강렬한 글리치 효과
+    if (isGlitching && time - glitchTime < 0.4) {
+      // 정점 파괴 효과 (더 강력하게)
       for (let i = 0; i < positions.length; i += 3) {
-        if (Math.random() > 0.7) {
-          // 갑작스럽게 정점을 다른 위치로 이동
-          positions[i] = (Math.random() - 0.5) * 10;     // x
-          positions[i + 1] = (Math.random() - 0.5) * 10; // y
-          positions[i + 2] = (Math.random() - 0.5) * 2;  // z
+        if (Math.random() > 0.6) { // 더 많은 정점 변형
+          // 갑작스럽고 극단적인 정점 이동
+          positions[i] = originalVerticesRef.current[i] + (Math.random() - 0.5) * 15;     // x
+          positions[i + 1] = originalVerticesRef.current[i + 1] + (Math.random() - 0.5) * 15; // y
+          positions[i + 2] = originalVerticesRef.current[i + 2] + (Math.random() - 0.5) * 8;  // z
         }
       }
 
-      // 색상 번쩍임 효과
+      // 더 강렬한 색상 번쩍임 효과
       if (materialRef.current) {
+        const redIntensity = Math.random();
         materialRef.current.emissive.setRGB(
-          Math.random() > 0.5 ? 1 : 0,
+          redIntensity > 0.3 ? 2.0 : 0,
           0,
-          Math.random() > 0.5 ? 1 : 0
+          redIntensity > 0.7 ? 1.0 : 0
         );
+        // 투명도도 변경해서 더 무서운 효과
+        materialRef.current.opacity = 0.3 + Math.random() * 0.7;
       }
-    } else if (time - glitchTime > 0.3) {
-      // 원상복구
+
+      // 메시 자체도 변형
+      mesh.scale.setScalar(0.8 + Math.random() * 0.6);
+    } else if (time - glitchTime > 0.4) {
+      // 원상복구 (부드럽게)
       setIsGlitching(false);
       for (let i = 0; i < positions.length; i++) {
-        positions[i] = originalVertices[i] + (Math.random() - 0.5) * 0.1;
+        positions[i] = originalVerticesRef.current[i] + (Math.random() - 0.5) * 0.2;
       }
 
       if (materialRef.current) {
         materialRef.current.emissive.setRGB(0, 0, 0);
+        materialRef.current.opacity = 0.9;
       }
+      mesh.scale.setScalar(1.0);
     }
 
-    // 지속적인 미세 변형
-    for (let i = 0; i < positions.length; i += 9) { // 일부 정점만
-      if (Math.random() > 0.95) {
-        positions[i] += (Math.random() - 0.5) * 0.05;
-        positions[i + 1] += (Math.random() - 0.5) * 0.05;
+    // 지속적인 미세 변형 (더 활발하게)
+    for (let i = 0; i < positions.length; i += 6) { // 더 많은 정점
+      if (Math.random() > 0.9) {
+        positions[i] += (Math.random() - 0.5) * 0.08;
+        positions[i + 1] += (Math.random() - 0.5) * 0.08;
+        positions[i + 2] += (Math.random() - 0.5) * 0.04;
       }
     }
 
     mainGeometry.attributes.position.needsUpdate = true;
 
-    // 불안정한 회전
-    mesh.rotation.x += 0.002 + Math.random() * 0.005;
-    mesh.rotation.y += 0.003 + Math.random() * 0.003;
-    mesh.rotation.z += 0.001 + Math.random() * 0.002;
+    // 더 불안정하고 무서운 회전
+    const rotationIntensity = isGlitching ? 0.02 : 0.005;
+    mesh.rotation.x += rotationIntensity + Math.random() * 0.01;
+    mesh.rotation.y += rotationIntensity * 1.5 + Math.random() * 0.008;
+    mesh.rotation.z += rotationIntensity * 0.5 + Math.random() * 0.005;
 
-    // 카메라 직접 조작 제거 - 사용자 제어만 허용
+    // 갑작스러운 점프스케어 효과 (가끔)
+    if (time - lastJumpscare > 10 && Math.random() > 0.998) {
+      setLastJumpscare(time);
+      mesh.position.set(
+        (Math.random() - 0.5) * 2,
+        (Math.random() - 0.5) * 2,
+        (Math.random() - 0.5) * 1
+      );
+      setTimeout(() => {
+        mesh.position.set(0, 0, 0);
+      }, 200);
+    }
 
-    // 파편 애니메이션
+    // 파편 애니메이션 (더 역동적으로)
     if (fragmentMeshRef.current) {
-      fragmentMeshRef.current.rotation.x += 0.01;
-      fragmentMeshRef.current.rotation.y -= 0.008;
+      fragmentMeshRef.current.rotation.x += 0.015 + Math.random() * 0.005;
+      fragmentMeshRef.current.rotation.y -= 0.012 + Math.random() * 0.004;
+      fragmentMeshRef.current.rotation.z += 0.008 + Math.random() * 0.003;
+
+      // 파편들도 가끔 위치 변경
+      if (Math.random() > 0.99) {
+        fragmentMeshRef.current.position.set(
+          (Math.random() - 0.5) * 4,
+          (Math.random() - 0.5) * 4,
+          (Math.random() - 0.5) * 2
+        );
+      }
     }
   });
 
   return (
     <group>
-      {/* 메인 글리치 엔티티 */}
+      {/* 메인 글리치 엔티티 - 더 무서운 재질 */}
       <mesh ref={mainMeshRef} geometry={mainGeometry}>
         <meshStandardMaterial
           ref={materialRef}
@@ -209,21 +249,47 @@ const CreepyGlitchMesh: React.FC<CreepyGlitchMeshProps> = ({ keyword }) => {
           transparent
           opacity={0.9}
           emissive="#000000"
-          roughness={0.8}
-          metalness={0.2}
+          roughness={0.9}
+          metalness={0.1}
+          side={THREE.DoubleSide} // 양면 렌더링으로 더 두꺼운 느낌
         />
       </mesh>
 
-      {/* 떠다니는 파편들 */}
+      {/* 추가 무서운 외곽선 효과 */}
+      <mesh geometry={mainGeometry}>
+        <meshBasicMaterial
+          color="#FF0000"
+          wireframe={true}
+          transparent
+          opacity={isGlitching ? 0.8 : 0.1}
+          side={THREE.DoubleSide}
+        />
+      </mesh>
+
+      {/* 떠다니는 파편들 - 더 크고 무섭게 */}
       <points ref={fragmentMeshRef} geometry={fragmentGeometry}>
         <pointsMaterial
           vertexColors
-          size={0.05}
+          size={isGlitching ? 0.15 : 0.08}
           transparent
-          opacity={0.8}
+          opacity={0.9}
           sizeAttenuation
         />
       </points>
+
+      {/* 추가 공포 효과: 갑작스럽게 나타나는 빨간 구체들 */}
+      {isGlitching && (
+        <>
+          <mesh position={[(Math.random() - 0.5) * 10, (Math.random() - 0.5) * 10, (Math.random() - 0.5) * 5]}>
+            <sphereGeometry args={[0.1, 8, 6]} />
+            <meshBasicMaterial color="#FF0000" transparent opacity={0.8} />
+          </mesh>
+          <mesh position={[(Math.random() - 0.5) * 8, (Math.random() - 0.5) * 8, (Math.random() - 0.5) * 4]}>
+            <sphereGeometry args={[0.05, 6, 4]} />
+            <meshBasicMaterial color="#990000" transparent opacity={0.6} />
+          </mesh>
+        </>
+      )}
     </group>
   );
 };

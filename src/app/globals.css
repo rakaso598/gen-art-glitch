@@ -97,6 +97,40 @@ body {
   animation: loading-corruption 0.15s infinite;
 }
 
+/* 더 무서운 글리치 텍스트 효과 */
+.glitch-text {
+  position: relative;
+  display: inline-block;
+  animation: creepy-text-glitch 0.5s infinite;
+}
+
+.glitch-text::before {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, #FF0000, #990000);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: horror-shift-1 0.3s infinite;
+  z-index: -1;
+}
+
+.glitch-text::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  color: #00FFFF;
+  animation: horror-shift-2 0.4s infinite;
+  z-index: -2;
+}
+
 /* 섬뜩한 키프레임 애니메이션들 */
 @keyframes creepy-glitch {
   0%, 85%, 100% {
@@ -169,6 +203,34 @@ body {
     transform: translate(-5px, -3px) scaleY(0.8);
     opacity: 0.4;
   }
+}
+
+@keyframes creepy-text-glitch {
+  0%, 80%, 100% { transform: translate(0); }
+  5% { transform: translate(-3px, 2px) scaleY(1.1); }
+  15% { transform: translate(2px, -3px) scaleX(0.9); }
+  25% { transform: translate(-2px, 1px) skew(2deg); }
+  35% { transform: translate(3px, -1px) skew(-1deg); }
+  45% { transform: translate(-1px, 2px) scale(1.05); }
+  55% { transform: translate(2px, -2px) rotate(1deg); }
+  65% { transform: translate(-2px, 3px) rotate(-0.5deg); }
+  75% { transform: translate(1px, -1px) scaleY(0.95); }
+}
+
+@keyframes horror-shift-1 {
+  0%, 90%, 100% { transform: translate(0); }
+  10% { transform: translate(-8px, 4px); }
+  30% { transform: translate(6px, -5px); }
+  50% { transform: translate(-4px, 3px); }
+  70% { transform: translate(7px, -2px); }
+}
+
+@keyframes horror-shift-2 {
+  0%, 85%, 100% { transform: translate(0); }
+  15% { transform: translate(5px, -6px); }
+  35% { transform: translate(-7px, 4px); }
+  55% { transform: translate(3px, 6px); }
+  75% { transform: translate(-5px, -3px); }
 }
 
 @keyframes input-corruption {
@@ -294,4 +356,144 @@ body::after {
 ::selection {
   background-color: var(--accent-magenta);
   color: #000000;
+}
+
+/* 무서운 빨간 펄스 효과 */
+.horror-pulse {
+  animation: horror-pulse 2s ease-in-out infinite;
+}
+
+@keyframes horror-pulse {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(255, 0, 0, 0.3);
+  }
+  25% {
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.7), inset 0 0 10px rgba(255, 0, 0, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(255, 0, 0, 1), inset 0 0 15px rgba(255, 0, 0, 0.4);
+  }
+  75% {
+    box-shadow: 0 0 35px rgba(255, 0, 0, 0.8), inset 0 0 20px rgba(255, 0, 0, 0.3);
+  }
+}
+
+/* 공포스러운 화면 깜빡임 효과 */
+.entity-flash {
+  animation: entity-flash 3s ease-in-out infinite;
+}
+
+@keyframes entity-flash {
+  0%, 95%, 100% {
+    background-color: rgba(0, 0, 0, 0.7);
+  }
+  97% {
+    background-color: rgba(255, 0, 0, 0.1);
+  }
+  98% {
+    background-color: rgba(0, 0, 0, 0.9);
+  }
+  99% {
+    background-color: rgba(255, 0, 0, 0.2);
+  }
+}
+
+/* 무서운 스태틱 노이즈 효과 */
+.static-noise {
+  position: relative;
+  overflow: hidden;
+}
+
+.static-noise::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(circle, transparent 20%, rgba(255, 0, 0, 0.05) 20.5%, rgba(255, 0, 0, 0.05) 21%, transparent 21.5%),
+    linear-gradient(0deg, transparent 24%, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.05) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, 0.03) 75%, rgba(255, 255, 255, 0.03) 76%, transparent 77%);
+  background-size: 3px 3px, 100% 4px;
+  animation: static-noise-animation 0.1s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes static-noise-animation {
+  0% { transform: translate(0px, 0px); opacity: 1; }
+  10% { transform: translate(-1px, 1px); opacity: 0.8; }
+  20% { transform: translate(1px, -1px); opacity: 0.9; }
+  30% { transform: translate(-1px, -1px); opacity: 0.7; }
+  40% { transform: translate(1px, 1px); opacity: 0.8; }
+  50% { transform: translate(0px, -1px); opacity: 0.9; }
+  60% { transform: translate(-1px, 0px); opacity: 0.6; }
+  70% { transform: translate(1px, 0px); opacity: 0.8; }
+  80% { transform: translate(0px, 1px); opacity: 0.9; }
+  90% { transform: translate(-1px, 1px); opacity: 0.7; }
+  100% { transform: translate(0px, 0px); opacity: 1; }
+}
+
+/* 극도로 무서운 점프스케어 효과 */
+.jumpscare-ready {
+  transition: all 0.1s ease-out;
+}
+
+.jumpscare-active {
+  transform: scale(1.5) rotate(5deg) !important;
+  filter: brightness(300%) contrast(200%) saturate(500%) hue-rotate(0deg) !important;
+  box-shadow: 0 0 100px rgba(255, 0, 0, 1) !important;
+  z-index: 9999 !important;
+  animation: jumpscare-shake 0.3s ease-out !important;
+}
+
+@keyframes jumpscare-shake {
+  0% { transform: scale(1.5) rotate(5deg) translate(0); }
+  10% { transform: scale(1.5) rotate(5deg) translate(-10px, 10px); }
+  20% { transform: scale(1.5) rotate(5deg) translate(10px, -10px); }
+  30% { transform: scale(1.5) rotate(5deg) translate(-10px, -10px); }
+  40% { transform: scale(1.5) rotate(5deg) translate(10px, 10px); }
+  50% { transform: scale(1.5) rotate(5deg) translate(-5px, 5px); }
+  60% { transform: scale(1.5) rotate(5deg) translate(5px, -5px); }
+  70% { transform: scale(1.5) rotate(5deg) translate(-5px, -5px); }
+  80% { transform: scale(1.5) rotate(5deg) translate(5px, 5px); }
+  90% { transform: scale(1.5) rotate(5deg) translate(-2px, 2px); }
+  100% { transform: scale(1.5) rotate(5deg) translate(0); }
+}
+
+/* 긴급 성능 모드 스타일 */
+.emergency-mode {
+  filter: brightness(0.7) contrast(0.8);
+  animation: none !important;
+}
+
+.emergency-mode * {
+  animation-duration: 0s !important;
+  transition-duration: 0s !important;
+}
+
+/* 성능 경고 표시 */
+.performance-warning {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 0, 0, 0.9);
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  z-index: 9999;
+  font-family: monospace;
+  text-align: center;
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+}
+
+.performance-warning h3 {
+  margin: 0 0 10px 0;
+  font-size: 18px;
+}
+
+.performance-warning p {
+  margin: 0;
+  font-size: 14px;
 }
