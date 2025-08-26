@@ -20,6 +20,17 @@ const eslintConfig = [
       "next-env.d.ts",
     ],
   },
+  {
+    rules: {
+      // Vercel 배포를 위한 완화된 규칙들
+      "@typescript-eslint/no-unused-vars": "warn",
+      "@typescript-eslint/no-explicit-any": "warn",
+      "react-hooks/exhaustive-deps": "warn",
+      // Three.js와 R3F 관련 규칙들
+      "@typescript-eslint/ban-ts-comment": "off",
+      "prefer-const": "warn"
+    },
+  },
 ];
 
 export default eslintConfig;

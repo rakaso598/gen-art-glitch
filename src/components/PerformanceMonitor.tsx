@@ -54,7 +54,13 @@ const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({ onPerformanceIs
   useEffect(() => {
     const checkMemory = () => {
       if ('memory' in performance) {
-        const memory = (performance as any).memory;
+        const memory = (performance as Performance & {
+          memory: {
+            usedJSHeapSize: number;
+            totalJSHeapSize: number;
+            jsHeapSizeLimit: number;
+          };
+        }).memory;
         const usedMB = memory.usedJSHeapSize / 1024 / 1024;
         const limitMB = memory.jsHeapSizeLimit / 1024 / 1024;
 

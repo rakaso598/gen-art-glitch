@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
@@ -8,7 +8,7 @@ interface TerrorFlashProps {
   keyword: string;
 }
 
-const TerrorFlash: React.FC<TerrorFlashProps> = ({ keyword }) => {
+const TerrorFlash: React.FC<TerrorFlashProps> = () => {
   const meshRef = useRef<THREE.Mesh>(null);
   const materialRef = useRef<THREE.MeshBasicMaterial>(null);
   const [lastTerror, setLastTerror] = useState(0);
