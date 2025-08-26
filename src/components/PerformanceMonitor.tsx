@@ -1,15 +1,15 @@
 'use client';
 
 import { useFrame } from '@react-three/fiber';
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 
 interface PerformanceMonitorProps {
   onPerformanceIssue?: () => void;
+  onFpsUpdate?: (fps: number) => void;
 }
 
-// 개발 환경에서만 FPS 모니터링 + 성능 문제 감지
-const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({ onPerformanceIssue }) => {
-  const [fps, setFps] = useState(60);
+// Canvas 내부용 성능 모니터링 (UI 없음)
+const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({ onPerformanceIssue, onFpsUpdate }) => {
   const lastTime = useRef(performance.now());
   const frames = useRef(0);
   const fpsHistoryRef = useRef<number[]>([]);
@@ -21,7 +21,11 @@ const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({ onPerformanceIs
 
     if (now - lastTime.current >= 1000) {
       const currentFps = Math.round((frames.current * 1000) / (now - lastTime.current));
-      setFps(currentFps);
+
+      // 외부로 FPS 전달
+      if (onFpsUpdate) {
+        onFpsUpdate(currentFps);
+      }
 
       // FPS 히스토리 유지 (최근 5초)
       fpsHistoryRef.current.push(currentFps);
@@ -69,17 +73,8 @@ const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({ onPerformanceIs
     };
   }, [onPerformanceIssue]);
 
-  // 프로덕션에서는 FPS 표시 숨김 (성능 모니터링은 계속)
-  if (process.env.NODE_ENV === 'production') return null;
-
-  return (
-    <div className="fixed top-4 left-4 z-50 bg-black/70 text-white px-3 py-2 text-xs font-mono border border-gray-600">
-      <div>FPS: {fps}</div>
-      <div className={fps < 20 ? 'text-red-400' : fps < 40 ? 'text-yellow-400' : 'text-green-400'}>
-        Status: {fps < 20 ? 'Poor' : fps < 40 ? 'Fair' : 'Good'}
-      </div>
-    </div>
-  );
+  // Canvas 내부에서는 아무것도 렌더링하지 않음
+  return null;
 };
 
 export default PerformanceMonitor;

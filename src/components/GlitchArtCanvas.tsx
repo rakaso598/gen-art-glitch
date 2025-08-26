@@ -12,6 +12,7 @@ import HorrificRedRays from './HorrificRedRays';
 import JumpscareFlash from './JumpscareFlash';
 import TerrorFlash from './TerrorFlash';
 import PerformanceMonitor from './PerformanceMonitor';
+import PerformanceDisplay from './PerformanceDisplay';
 import { isMobile, getPerformanceLevel } from '@/utils/performance';
 
 interface GlitchArtCanvasProps {
@@ -26,6 +27,7 @@ const GlitchArtCanvas: React.FC<GlitchArtCanvasProps> = ({ keyword }) => {
   const [cameraShake, setCameraShake] = useState({ x: 0, y: 0, z: 0 });
   const shakeIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const [emergencyMode, setEmergencyMode] = useState(false);
+  const [currentFps, setCurrentFps] = useState(60);
 
   useEffect(() => {
     setMobile(isMobile());
@@ -82,7 +84,7 @@ const GlitchArtCanvas: React.FC<GlitchArtCanvasProps> = ({ keyword }) => {
   }, []);
 
   return (
-    <div className="w-full h-screen">
+    <div className="w-full h-screen relative">
       <Canvas
         gl={{
           antialias: performanceLevel === 'high' && !mobile, // 조건부 안티앨리어싱
@@ -177,7 +179,10 @@ const GlitchArtCanvas: React.FC<GlitchArtCanvasProps> = ({ keyword }) => {
         {canvasReady && !emergencyMode && <TerrorFlash keyword={keyword} />}
 
         {/* 성능 모니터링 */}
-        <PerformanceMonitor onPerformanceIssue={handlePerformanceIssue} />
+        <PerformanceMonitor
+          onPerformanceIssue={handlePerformanceIssue}
+          onFpsUpdate={setCurrentFps}
+        />
 
         {/* 카메라 컨트롤 - 사용자 전용 제어 */}
         <OrbitControls
@@ -221,6 +226,9 @@ const GlitchArtCanvas: React.FC<GlitchArtCanvasProps> = ({ keyword }) => {
           </EffectComposer>
         )}
       </Canvas>
+
+      {/* Canvas 외부에 FPS 표시 */}
+      <PerformanceDisplay fps={currentFps} />
     </div>
   );
 };
