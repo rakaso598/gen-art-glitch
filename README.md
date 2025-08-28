@@ -1,6 +1,14 @@
-# 🎨 Generative Glitch Art
+# 🎨 Generative Glitch Art - ✨[바로가기](https://gen-art-glitch.vercel.app)
 
-키워드 기반 3D 글리치 아트 생성기 - "불안정한 아름다움"의 디지털 미학을 탐구하는 인터랙티브 웹 애플리케이션
+## 키워드 기반 3D 글리치 아트 생성기 - "불안정한 아름다움"의 디지털 미학을 탐구하는 인터랙티브 웹 애플리케이션
+
+<img width="600" alt="메인화면" src="https://github.com/user-attachments/assets/45fb3e8e-920f-4ace-8fe5-cd4b5ad1cd45" />
+
+<img width="600" alt="로딩화면" src="https://github.com/user-attachments/assets/7a84323d-cc2e-4eef-9580-0fbc79b3baa3" />
+
+<img width="600" alt="소환화면1" src="https://github.com/user-attachments/assets/7e6b44c6-a1d4-45c0-b3be-cc72f5061fa6" />
+
+<img width="600" alt="소환화면2" src="https://github.com/user-attachments/assets/1c3156be-3420-4130-ba5f-0030cf50c299" />
 
 ## ✨ 주요 기능
 
